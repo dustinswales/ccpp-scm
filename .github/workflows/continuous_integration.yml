@@ -124,7 +124,7 @@ jobs:
     - name: Build SCM
       run: |
         source /opt/intel/oneapi/setvars.sh || true
-	mkdir scm/bin
-	cd scm/bin
-	cmake ../src
-	make -j4
+        mkdir scm/bin
+        cd scm/bin
+        cmake ../src
+        make -j4
