@@ -117,3 +117,14 @@ jobs:
         ./configure --prefix=${NFHOME}
         make -j
         sudo make install
+
+    ###############################################################################
+    # Build SCM, download input data, and run regression tests.
+    ###############################################################################
+    - name: Build SCM
+      run: |
+        source /opt/intel/oneapi/setvars.sh || true
+	mkdir scm/bin
+	cd scm/bin
+	cmake ../src
+	make -j4
