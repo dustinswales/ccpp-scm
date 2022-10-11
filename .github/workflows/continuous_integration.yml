@@ -35,4 +35,5 @@ jobs:
     # CCPP_prebuild.py
     - name: Run ccpp_prebuild.py
       run: |
+        ls -ltr /home/runner/work/ccpp-scm/ccpp-scm/scm/bin
         ./ccpp/framework/scripts/ccpp_prebuild.py --config ccpp/config/ccpp_prebuild_config.py
