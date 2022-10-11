@@ -8,10 +8,9 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+    # Checks-out repository under $GITHUB_WORKSPACE
     - uses: actions/checkout@v2
-    ###############################################################################
-    # Initial steps
-    ###############################################################################
+    
     # Set up Python and install dependencies
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -23,14 +22,18 @@ jobs:
         python-version: 3.7
     - name: Install python packages
       run: conda install --yes cartopy matplotlib netcdf4
+    
     # Update system packages
     - name: Update system packages
       run: sudo apt-get update
+    
     # Non compiler-specific environment
     - name: Non compiler-specific environment
       run: export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${NFHOME}/lib
 
+    # CCPP_prebuild.py
     - name: Run ccpp_prebuild.py
       run: |
+        cd ${GITHUB_WORKSPACE}
         source /opt/intel/oneapi/setvars.sh || true
         ./ccpp/framework/scripts/ccpp_prebuild.py --config ccpp/config/ccpp_prebuild_config.py --builddir=./scm/bin
