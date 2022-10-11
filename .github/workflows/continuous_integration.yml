@@ -4,34 +4,31 @@ on: [push, pull_request]
 
 jobs:
   build:
+
     # The type of runner that the job will run on
-    runs-on: ubuntu-20.04
+    runs-on: macos-latest
 
     steps:
-    # Checks-out repository under $GITHUB_WORKSPACE
-    - uses: actions/checkout@v2
+
+    # A) Checks-out repository under $GITHUB_WORKSPACE
+    - name: Checkout code
+      uses: actions/checkout@v2
     
-    # Set up Python and install dependencies
+    # B) Set up Python and install dependencies
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
+
+    # C) Set up Conda and install dependencies
     - name: Setup conda
       uses: s-weigand/setup-conda@v1
       with:
         python-version: 3.7
     - name: Install python packages
       run: conda install --yes cartopy matplotlib netcdf4
-    
-    # Update system packages
-    - name: Update system packages
-      run: sudo apt-get update
-    
-    # Non compiler-specific environment
-    - name: Non compiler-specific environment
-      run: export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${NFHOME}/lib
 
-    # CCPP_prebuild.py
+    # D) CCPP_prebuild.py
     - name: Run ccpp_prebuild.py
       run: |
         ./ccpp/framework/scripts/ccpp_prebuild.py --config ccpp/config/ccpp_prebuild_config.py --builddir=./scm/bin
