@@ -36,6 +36,6 @@ jobs:
     - name: Run ccpp_prebuild.py
       run: |
         pwd
-        mkdir scm/bin
+        mkdir /home/runner/work/ccpp-scm/ccpp-scm/scm/bin
         ls scm/bin
         ./ccpp/framework/scripts/ccpp_prebuild.py --config ccpp/config/ccpp_prebuild_config.py --builddir=scm/bin
