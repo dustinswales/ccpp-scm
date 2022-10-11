@@ -14,7 +14,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # Get submodules
+    # Checkout submodules
     - name: Init submodules
       run: git submodule update --init --recursive
     
@@ -35,4 +35,4 @@ jobs:
     # CCPP_prebuild.py
     - name: Run ccpp_prebuild.py
       run: |
-        ./ccpp/framework/scripts/ccpp_prebuild.py --config ccpp/config/ccpp_prebuild_config.py --builddir=scm/bin
+        ./ccpp/framework/scripts/ccpp_prebuild.py --config ccpp/config/ccpp_prebuild_config.py --builddir=$GITHUB_WORKSPACE/scm/bin
