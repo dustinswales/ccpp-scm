@@ -10,17 +10,21 @@ jobs:
 
     steps:
 
-    # A) Checks-out repository under $GITHUB_WORKSPACE
+    # Checks-out repository under $GITHUB_WORKSPACE
     - name: Checkout code
       uses: actions/checkout@v2
+
+    # Get submodules
+    - name: Init submodules
+      run: git submodule update --init --recursive
     
-    # B) Set up Python and install dependencies
+    # Set up Python and install dependencies
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
 
-    # C) Set up Conda and install dependencies
+    # Set up Conda and install dependencies
     - name: Setup conda
       uses: s-weigand/setup-conda@v1
       with:
@@ -28,7 +32,7 @@ jobs:
     - name: Install python packages
       run: conda install --yes cartopy matplotlib netcdf4
 
-    # D) CCPP_prebuild.py
+    # CCPP_prebuild.py
     - name: Run ccpp_prebuild.py
       run: |
         pwd
