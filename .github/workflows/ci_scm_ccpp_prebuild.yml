@@ -1,4 +1,4 @@
-name: CI checks for CCPP-SCM
+name: CI test to run SCM ccpp_prebuild script
 
 on: [push, pull_request]
 
