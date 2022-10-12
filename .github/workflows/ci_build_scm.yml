@@ -117,5 +117,5 @@ jobs:
     - name: Configure CMake
       run: |
         mkdir -p ${{github.workspace}}/scm/bin
-        cd ${{github.workspace}}/scm/bin
-        cmake -B ${{github.workspace}}/scm/src
+        cd ${{github.workspace}}/scm/src
+        cmake ${{github.workspace}}/scm/src
