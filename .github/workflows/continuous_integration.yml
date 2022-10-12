@@ -30,4 +30,5 @@ jobs:
 
     - name: Run ccpp_prebuild.py
       run: |
+        mkdir -p /home/runner/work/ccpp-scm/ccpp-scm/scm/bin/ccpp/physics/
         ./ccpp/framework/scripts/ccpp_prebuild.py --config ccpp/config/ccpp_prebuild_config.py
