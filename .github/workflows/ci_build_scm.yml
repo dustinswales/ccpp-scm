@@ -8,7 +8,18 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 5
+      matrix:
+        fortran-compiler: [gfortran]
+    env:
+      F90: ${{ matrix.fortran-compiler }}
+      FC: ${{ matrix.fortran-compiler }}
+      F90FLAGS: "-O3 -ffree-line-length-none -fcheck=bounds -finit-real=nan"
+      ATOL: 0.0
+      RTOL: 0.0
+      #KGO_VERSION: v001
+      KGO_VERSION: v002
+      NFHOME: /home/runner/netcdf-fortran
+      LD_LIBRARY_PATH: /home/runner/netcdf-fortran/lib
 
     steps:
 
@@ -32,12 +43,41 @@ jobs:
       run: |
         conda install --yes -c conda-forge f90nml
 
-    - name: Setup environment
-      run: |
-        . /home/runner/work/ccpp-scm/ccpp-scm/scm/etc/Cheyenne_setup_intel.sh
+    ###############################################################################
+    # FORTRAN compilers
+    ###############################################################################
+    #
+    # Install gfortran compiler
+    #
+    - name: Install gfortran compiler
+      if: contains(matrix.fortran-compiler, 'gfortran')
+      run: sudo apt-get install ${{ matrix.fortran-compiler }}
 
-    - name: Run cmake
+    ###############################################################################
+    # NetCDF C and FORTRAN libraries
+    ###############################################################################
+    # NetCDF C library
+    - name: Install NetCDF library
+      run: sudo apt-get install libnetcdf-dev
+
+    # Cache netcdf FORTRAN library
+    - name: cache-netcdf-fortran
+      id: cache-netcdf-fortran
+      uses: actions/cache@v2
+      with:
+        path: /home/runner/netcdf-fortran
+        key: netcdf-fortran-4.4.4a-${{ runner.os }}-${{ matrix.fortran-compiler }}-v02
+
+    # Build NetCDF FORTRAN library for current compiler
+    - name: Build NetCDF FORTRAN library
+      env:
+        FCFLAGS: -fPIC
+      if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
       run: |
-        mkdir -p /home/runner/work/ccpp-scm/ccpp-scm/scm/bin/ccpp/physics/physics/
-        cd /home/runner/work/ccpp-scm/ccpp-scm/scm/bin/
-        cmake ../src/
+        source /opt/intel/oneapi/setvars.sh || true
+        ${F90} --version
+        git clone https://github.com/Unidata/netcdf-fortran.git --branch v4.4.4
+        cd netcdf-fortran
+        ./configure --prefix=${NFHOME}
+        make -j
+        sudo make install
