@@ -1,4 +1,4 @@
-name: CI test to run SCM ccpp_prebuild script
+name: CI test to build SCM
 
 on: [push, pull_request]
 
@@ -30,7 +30,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        conda instal --yes -c conda-forge f90nml
+        conda install --yes -c conda-forge f90nml
 
     - name: Run cmake
       run: |
