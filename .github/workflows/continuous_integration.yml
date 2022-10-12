@@ -18,10 +18,10 @@ jobs:
     - name: Initialize submodules
       run: git submodule update --init --recursive
     
-    - name: Set up Python 3.10
+    - name: Set up Python 3.8.5
       uses: actions/setup-python@v3
       with:
-        python-version: 3.10.0
+        python-version: 3.8.5
 
     - name: Add conda to system path
       run: |
@@ -30,15 +30,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        conda install --yes cartopy matplotlib netcdf4
-
-    - name: Link with flake8
-      run: |
-        conda install flake8
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        conda install --yes f90nml
 
     - name: Run ccpp_prebuild.py
       run: |
