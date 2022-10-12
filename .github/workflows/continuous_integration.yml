@@ -36,4 +36,4 @@ jobs:
       run: |
         mkdir /home/runner/work/ccpp-scm/ccpp-scm/scm/bin
         ls -ltr /home/runner/work/ccpp-scm/ccpp-scm/scm/bin
-        ./ccpp/framework/scripts/ccpp_prebuild.py --config ccpp/config/ccpp_prebuild_config.py --builddir scm/bin
+        ./ccpp/framework/scripts/ccpp_prebuild.py --config ccpp/config/ccpp_prebuild_config.py --builddir ./scm/bin
