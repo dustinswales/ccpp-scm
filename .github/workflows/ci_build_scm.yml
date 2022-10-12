@@ -32,6 +32,10 @@ jobs:
       run: |
         conda install --yes -c conda-forge f90nml
 
+    - name: Setup environment
+      run: |
+        . /home/runner/work/ccpp-scm/ccpp-scm/scm/etc/Cheyenne_setup_intel.sh
+
     - name: Run cmake
       run: |
         mkdir -p /home/runner/work/ccpp-scm/ccpp-scm/scm/bin/ccpp/physics/physics/
