@@ -19,9 +19,9 @@ jobs:
       run: git submodule update --init --recursive
     
     - name: Set up Python 3.10
-      uses: actions/setup-python@v3.10
+      uses: actions/setup-python@v3
       with:
-        python-version: 3.10
+        python-version: 3.10.0
 
     - name: Add conda to system path
       run: |
