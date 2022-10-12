@@ -30,7 +30,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        conda env update --file environment.yml --name base
+        conda install --yes cartopy matplotlib netcdf4
 
     - name: Link with flake8
       run: |
