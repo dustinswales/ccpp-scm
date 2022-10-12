@@ -30,7 +30,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        conda install --yes f90nml
+        conda install --yes -c conda-forge f90nml
 
     - name: Run ccpp_prebuild.py
       run: |
