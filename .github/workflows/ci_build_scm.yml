@@ -77,7 +77,7 @@ jobs:
       run: pip3 install cmake ninja fypp
 
     - name: Configure build
-      run: >-
+      run: |
         cd /home/runner/work/ccpp-scm/ccpp-scm/scm/src
         cmake -B ${BUILD_DIR} -G Ninja
         -DCMAKE_INSTALL_PREFIX=${PWD}/_install
