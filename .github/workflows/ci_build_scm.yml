@@ -77,7 +77,5 @@ jobs:
     - name: Run CMake
       run: |
         pwd
-        echo ${{github.workspace}}
-        mkdir -p ${{github.workspace}}/scm/bin
-        cd ${{github.workspace}}/scm/src
-        cmake ${{github.workspace}}/scm/src
+        mkdir -p scm/bin && cd scm/src
+        cmake ../src
