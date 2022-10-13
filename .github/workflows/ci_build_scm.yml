@@ -48,8 +48,10 @@ jobs:
     - name: Install f90nml
       run: conda install --yes -c conda-forge f90nml
 
-    - name: Install gfortran compiler
-      run: sudo apt-get install gfortran
+    - name: Set compiler
+      run: |
+        echo "FC=gfortran-9" >> $GITHUB_ENV
+        echo "CC=gcc-9" >> $GITHUB_ENV
 
     - name: Install NetCDF C library
       run: sudo apt-get install libnetcdf-dev
@@ -68,9 +70,11 @@ jobs:
     ###############################################################################
     #
     ###############################################################################
+    - name: Install cmake
+      run: pip3 install cmake ninja fypp
 
-    - name: Run CMake
-      run: |
-        mkdir -p scm/bin && cd scm/src
-        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ../src
-        cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} ../src
+    - name: Configure build
+      run: >-
+        cmake -B ${BUILD_DIR} -G Ninja
+        -DCMAKE_INSTALL_PREFIX=${PWD}/_install
+        ${CMAKE_OPTIONS} ../src
