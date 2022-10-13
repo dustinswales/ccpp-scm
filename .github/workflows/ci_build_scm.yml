@@ -47,6 +47,9 @@ jobs:
     - name: Install f90nml
       run: conda install --yes -c conda-forge f90nml
 
+    - name: Install gfortran compiler
+      run: sudo apt-get install gfortran
+
     - name: Install cmake
       run: sudo apt-get -y install cmake
 
