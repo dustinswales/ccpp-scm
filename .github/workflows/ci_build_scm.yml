@@ -48,7 +48,7 @@ jobs:
       run: conda install --yes -c conda-forge f90nml
 
     - name: Install cmake
-      run: conda install --yes -c conda-forge cmake
+      run: sudo apt-get -y install cmake
 
     - name: Install NetCDF C library
       run: sudo apt-get install libnetcdf-dev
