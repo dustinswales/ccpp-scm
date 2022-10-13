@@ -39,47 +39,17 @@ jobs:
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
 
-    - name: Install dependencies
-      run: |
-        conda install --yes -c conda-forge f90nml
+    - name: Install f90nml
+      run: conda install --yes -c conda-forge f90nml
+
+    - name: Install gfortran
+      run: conda install --yes -c conda-forge ${{ matrix.fortran-compiler }}
+
+    - name: Install netcdf
+      run: conda install --yes -c conda-forge libnetcdf
 
     - name: Add NETCDF to path
       run: export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${NFHOME}/lib
-
-    ###############################################################################
-    # GNU FORTRAN 
-    ###############################################################################
-
-    - name: Install gfortran compiler
-      if: contains(matrix.fortran-compiler, 'gfortran')
-      run: sudo apt-get install ${{ matrix.fortran-compiler }}
-
-    ###############################################################################
-    # NetCDF C and FORTRAN libraries
-    ###############################################################################
-
-    - name: Install NetCDF library
-      run: sudo apt-get install libnetcdf-dev
-
-    - name: cache-netcdf-fortran
-      id: cache-netcdf-fortran
-      uses: actions/cache@v2
-      with:
-        path: /home/runner/netcdf-fortran
-        key: netcdf-fortran-4.4.4a-${{ runner.os }}-${{ matrix.fortran-compiler }}-v02
-
-    - name: Build NetCDF FORTRAN library
-      env:
-        FCFLAGS: -fPIC
-      if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
-      run: |
-        source /opt/intel/oneapi/setvars.sh || true
-        ${F90} --version
-        git clone https://github.com/Unidata/netcdf-fortran.git --branch v4.4.4
-        cd netcdf-fortran
-        ./configure --prefix=${NFHOME}
-        make -j
-        sudo make install
 
     ###############################################################################
     #
