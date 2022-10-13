@@ -49,6 +49,9 @@ jobs:
     - name: Install netcdf
       run: conda install --yes -c conda-forge libnetcdf
 
+    - name: Install cmake
+      run: conda install --yes -c anaconda cmake
+
     - name: Add NETCDF to LD_LIBRARY_PATH
       run: export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${NFHOME}/lib
 
