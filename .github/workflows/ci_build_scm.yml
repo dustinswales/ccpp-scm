@@ -78,6 +78,7 @@ jobs:
 
     - name: Configure build
       run: >-
+        cd /home/runner/work/ccpp-scm/ccpp-scm/scm/src
         cmake -B ${BUILD_DIR} -G Ninja
         -DCMAKE_INSTALL_PREFIX=${PWD}/_install
-        ${CMAKE_OPTIONS} ../src
+        ${CMAKE_OPTIONS}
