@@ -11,12 +11,16 @@ jobs:
       matrix:
         fortran-compiler: [gfortran]
     env:
-      F90: ${{ matrix.fortran-compiler }}
-      FC: ${{ matrix.fortran-compiler }}
-      F90FLAGS: "-O3 -ffree-line-length-none -fcheck=bounds -finit-real=nan"
       NFHOME: /home/runner/netcdf-fortran
       LD_LIBRARY_PATH: /home/runner/netcdf-fortran/lib
       DYLD_LIBRARY_PATH: /home/runner/netcdf-fortran/lib
+      CC: gcc
+      CXX: g++
+      FC: gfortran
+      CMAKE_C_COMPILER: gcc
+      CMAKE_CXX_COMPILER: g++
+      CMAKE_Fortran_COMPILER: gfortran
+      CMAKE_Platform: ubuntu-latest.gnu
 
     steps:
 
