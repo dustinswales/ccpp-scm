@@ -47,20 +47,22 @@ jobs:
     - name: Install f90nml
       run: conda install --yes -c conda-forge f90nml
 
-    - name: Install gfortran
-      run: conda install --yes -c conda-forge ${{ matrix.fortran-compiler }}
-
-    - name: Install netcdf
-      run: conda install --yes -c conda-forge libnetcdf
-
     - name: Install cmake
-      run: conda install --yes -c anaconda cmake
+      run: conda install --yes -c conda-forge cmake
+
+    - name: Install NetCDF C library
+      run: sudo apt-get install libnetcdf-dev
+
+    - name: Install NetCDF Fortran library
+      run: |
+        git clone https://github.com/Unidata/netcdf-fortran.git --branch v4.4.4
+        cd netcdf-fortran
+        ./configure --prefix=${NFHOME}
+        make -j
+        sudo make install
 
     - name: Add NETCDF to LD_LIBRARY_PATH
       run: export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${NFHOME}/lib
-
-    - name: Add NETCDF to DYLD_LIBRARY_PATH
-      run: export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${NFHOME}/lib
 
     ###############################################################################
     #
