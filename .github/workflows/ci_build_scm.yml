@@ -13,14 +13,9 @@ jobs:
     env:
       NFHOME: /home/runner/netcdf-fortran
       LD_LIBRARY_PATH: /home/runner/netcdf-fortran/lib
-      DYLD_LIBRARY_PATH: /home/runner/netcdf-fortran/lib
       CC: gcc
       CXX: g++
       FC: gfortran
-      CMAKE_C_COMPILER: gcc
-      CMAKE_CXX_COMPILER: g++
-      CMAKE_Fortran_COMPILER: gfortran
-      CMAKE_Platform: ubuntu-latest.gnu
       BUILD_TYPE: Release
       BUILD_DIR: _build
       CMAKE_OPTIONS: >-
