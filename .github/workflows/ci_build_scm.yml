@@ -62,7 +62,7 @@ jobs:
     - name: Install SPlib
       run: |
         git clone https://github.com/NOAA-EMC/NCEPLIBS-sp.git NCEPLIBS-sp
-        cd splib && mkdir build && cd build
+        cd NCEPLIBS-sp && mkdir build && cd build
         cmake -DCMAKE_INSTALL_PREFIX=${SPHOME} ../
         make -j2
         make install
