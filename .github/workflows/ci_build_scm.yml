@@ -14,6 +14,7 @@ jobs:
       NFHOME: /home/runner/netcdf-fortran
       BCHOME: /home/runner/bacio
       SPHOME: /home/runner/NCEPLIBS-sp
+      WCHOME: /home/runner/myw3emc
       LD_LIBRARY_PATH: /home/runner/netcdf-fortran/lib
       BUILD_TYPE: Release
       BUILD_DIR: _build
@@ -67,6 +68,15 @@ jobs:
         make -j2
         make install
         echo "sp_DIR=/home/runner/NCEPLIBS-sp/lib/cmake/sp" >> $GITHUB_ENV
+
+    - name: Install w3emc
+      run: |
+        git clone https://github.com/NOAA-EMC/NCEPLIBS-w3emc.git NCEPLIBS-w3emc
+        cd NCEPLIBS-w3emc && mkdir build && cd build
+        cmake -DCMAKE_INSTALL_PREFIX=${WCHOME} ../
+        make -j2
+        make install
+        echo "w3emc_DIR=/home/runner/myw3emc/lib" >> $GITHUB_ENV
 
     - name: Install NetCDF C library
       run: sudo apt-get install libnetcdf-dev
