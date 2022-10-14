@@ -13,6 +13,7 @@ jobs:
     env:
       NFHOME: /home/runner/netcdf-fortran
       BCHOME: /home/runner/bacio
+      SPHOME: /home/runner/sp
       LD_LIBRARY_PATH: /home/runner/netcdf-fortran/lib
       BUILD_TYPE: Release
       BUILD_DIR: _build
@@ -56,10 +57,15 @@ jobs:
         cmake ../ -DCMAKE_INSTALL_PREFIX=${BCHOME}
         make -j2
         make install
-
-    - name: Add BACIO_DIR
-      run: |
         echo "bacio_DIR=/home/runner/bacio/lib/cmake/bacio" >> $GITHUB_ENV
+
+    - name: Install SPlib
+      run: |
+        git clone https://github.com/NOAA-EMC/NCEPLIBS-sp.git sp
+        cd splib && mkdir build && cd build
+        cmake ../ -DCMAKE_INSTALL_PREFIX=${SPHOME}
+        make -j2
+        make install
 
     - name: Install NetCDF C library
       run: sudo apt-get install libnetcdf-dev
