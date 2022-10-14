@@ -57,8 +57,8 @@ jobs:
         make -j2
         make install
 
-    - name: Add BACIO to CMAKE_PREFIX_PATH
-      run: export CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:${BCHOME}/lib/cmake/bacio
+    - name: Add BACIO_DIR
+      run: "bacio_DIR=${BCHOME}/lib/cmake/bacio" >> $GITHUB_ENV
 
     - name: Install NetCDF C library
       run: sudo apt-get install libnetcdf-dev
