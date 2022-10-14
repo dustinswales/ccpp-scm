@@ -13,7 +13,7 @@ jobs:
     env:
       NFHOME: /home/runner/netcdf-fortran
       BCHOME: /home/runner/bacio
-      SPHOME: /home/runner/sp
+      SPHOME: /home/runner/NCEPLIBS-sp
       LD_LIBRARY_PATH: /home/runner/netcdf-fortran/lib
       BUILD_TYPE: Release
       BUILD_DIR: _build
@@ -61,9 +61,9 @@ jobs:
 
     - name: Install SPlib
       run: |
-        git clone https://github.com/NOAA-EMC/NCEPLIBS-sp.git sp
+        git clone https://github.com/NOAA-EMC/NCEPLIBS-sp.git NCEPLIBS-sp
         cd splib && mkdir build && cd build
-        cmake ../ -DCMAKE_INSTALL_PREFIX=${SPHOME}
+        cmake -DCMAKE_INSTALL_PREFIX=${SPHOME} ../
         make -j2
         make install
 
