@@ -13,9 +13,6 @@ jobs:
     env:
       NFHOME: /home/runner/netcdf-fortran
       LD_LIBRARY_PATH: /home/runner/netcdf-fortran/lib
-      CC: gcc
-      CXX: g++
-      FC: gfortran
       BUILD_TYPE: Release
       BUILD_DIR: _build
       CMAKE_OPTIONS: >-
