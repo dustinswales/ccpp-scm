@@ -66,6 +66,7 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX=${SPHOME} ../
         make -j2
         make install
+        echo "sp_DIR=/home/runner/NCEPLIBS-sp/lib/cmake/sp" >> $GITHUB_ENV
 
     - name: Install NetCDF C library
       run: sudo apt-get install libnetcdf-dev
