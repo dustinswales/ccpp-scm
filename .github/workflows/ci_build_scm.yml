@@ -58,7 +58,8 @@ jobs:
         make install
 
     - name: Add BACIO_DIR
-      run: "bacio_DIR=${BCHOME}/lib/cmake/bacio" >> $GITHUB_ENV
+      run: |
+        echo "bacio_DIR=/home/runner/bacio/lib/cmake/bacio" >> $GITHUB_ENV
 
     - name: Install NetCDF C library
       run: sudo apt-get install libnetcdf-dev
