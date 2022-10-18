@@ -91,10 +91,10 @@ jobs:
         echo "SCM_ROOT=/home/runner/work/ccpp-scm/ccpp-scm/" >> $GITHUB_ENV
 
     - name: Download data for SCM
-        run: |
-          cd /home/runner/work/ccpp-scm/ccpp-scm/
-          ./contrib/get_all_static_data.sh
-          ./contrib/get_thompson_tables.sh
+      run: |
+        cd /home/runner/work/ccpp-scm/ccpp-scm/
+        ./contrib/get_all_static_data.sh
+        ./contrib/get_thompson_tables.sh
 
     - name: Configure build with CMake
       run: |
