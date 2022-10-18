@@ -7,17 +7,17 @@ jobs:
 
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        fortran-compiler: [gfortran]
+
+    # Environmental variables
     env:
-      NFHOME: /home/runner/netcdf-fortran
+      NFHOME:     /home/runner/netcdf-fortran
       bacio_ROOT: /home/runner/bacio
-      sp_ROOT: /home/runner/NCEPLIBS-sp
+      sp_ROOT:    /home/runner/NCEPLIBS-sp
       w3emc_ROOT: /home/runner/myw3emc
       CMAKE_OPTIONS: >-
         -DCMAKE_BUILD_TYPE=Debug
 
+    # Workflow steps
     steps:
 
     - name: Checkout SCM code
@@ -91,7 +91,8 @@ jobs:
 
     - name: Configure build
       run: |
-        cd /home/runner/work/ccpp-scm/ccpp-scm/scm/bin
+        cd /home/runner/work/ccpp-scm/ccpp-scm/scm
+        mkdir bin && cd bin
         cmake ../src ${CMAKE_OPTIONS}
 
     - name: Make
