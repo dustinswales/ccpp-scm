@@ -93,11 +93,11 @@ jobs:
       run: |
         export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${NFHOME}/lib
 
-    - name: Add libraries to CMAKE_SOURCE_DIR
+    - name: Set up NCEPlibs
       run: |
-        export CMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR}:${BCHOME}/lib
-        export CMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR}:${SPHOME}/lib
-        export CMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR}:${WCHOME}/lib
+        echo "bacio_ROOT=${BCHOME}/lib" >> $GITHUB_ENV
+        echo "sp_ROOT=${SPHOME}/lib"    >> $GITHUB_ENV
+        echo "w3emc_ROOT=${WCHOME}/lib"	>> $GITHUB_ENV
 
     ###############################################################################
     #
