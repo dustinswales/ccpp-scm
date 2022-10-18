@@ -34,8 +34,8 @@ jobs:
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
 
-    - name: Install f90nml
-      run: conda install --yes -c conda-forge f90nml
+    - name: Install python libraries
+      run: conda install --yes -c conda-forge f90nml,netCDF4
 
     - name: Set compiler
       run: |
@@ -81,7 +81,7 @@ jobs:
         sudo make install
         export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${NFHOME}/lib
 
-    - name: Install cmake
+    - name: Install cmake v3.24.1
       run: pip3 install cmake ninja fypp
 
     - name: Configure build with CMake
@@ -90,12 +90,12 @@ jobs:
         mkdir bin && cd bin
         cmake ../src
 
-    - name: Make SCM
+    - name: Build SCM
       run: |
         cd /home/runner/work/ccpp-scm/ccpp-scm/scm/bin
         make -j4
 
-    - name: Run SCM RTs
+    - name: Run SCM
       run: |
         cd /home/runner/work/ccpp-scm/ccpp-scm/scm/bin
         ./run_scm.py -c bomex -s SCM_GFS_v16
