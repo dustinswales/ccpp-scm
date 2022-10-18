@@ -15,19 +15,12 @@ jobs:
       bacio_ROOT: /home/runner/bacio
       sp_ROOT: /home/runner/NCEPLIBS-sp
       w3emc_ROOT: /home/runner/myw3emc
-      LD_LIBRARY_PATH: /home/runner/netcdf-fortran/lib
-      BUILD_TYPE: Release
-      BUILD_DIR: _build
       CMAKE_OPTIONS: >-
         -DCMAKE_BUILD_TYPE=Debug
 
     steps:
 
-    ###############################################################################
-    # Setup
-    ###############################################################################
-
-    - name: Checkout code
+    - name: Checkout SCM code
       uses: actions/checkout@v3
 
     - name: Initialize submodules
@@ -49,7 +42,7 @@ jobs:
     - name: Set compiler
       run: |
         echo "FC=gfortran-9" >> $GITHUB_ENV
-        echo "CC=gcc-9" >> $GITHUB_ENV
+        echo "CC=gcc-9"      >> $GITHUB_ENV
 
     - name: Install bacio library v2.4.1
       run: |
@@ -81,9 +74,9 @@ jobs:
     - name: Install NetCDF C library
       run: sudo apt-get install libnetcdf-dev
 
-    - name: Install NetCDF Fortran library
+    - name: Install NetCDF Fortran library v4.4.4
       run: |
-        git clone https://github.com/Unidata/netcdf-fortran.git --branch v4.4.4
+        git clone --branch v4.4.4 https://github.com/Unidata/netcdf-fortran.git
         cd netcdf-fortran
         ./configure
         make -j
@@ -93,15 +86,12 @@ jobs:
       run: |
         export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${NFHOME}/lib
 
-    ###############################################################################
-    #
-    ###############################################################################
     - name: Install cmake
       run: pip3 install cmake ninja fypp
 
     - name: Configure build
       run: |
-        cd /home/runner/work/ccpp-scm/ccpp-scm/scm/src
+        cd /home/runner/work/ccpp-scm/ccpp-scm/scm/bin
         cmake ../src ${CMAKE_OPTIONS}
 
     - name: Make
