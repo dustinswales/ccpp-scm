@@ -53,7 +53,7 @@ jobs:
 
     - name: Install bacio library
       run: |
-        git clone https://github.com/NOAA-EMC/NCEPLIBS-bacio.git bacio
+        git clone --branch v2.4.1 https://github.com/NOAA-EMC/NCEPLIBS-bacio.git bacio
         cd bacio && mkdir build && cd build
         cmake -DCMAKE_INSTALL_PREFIX=${BCHOME} ../
         make -j2
@@ -63,7 +63,7 @@ jobs:
 
     - name: Install SPlib
       run: |
-        git clone https://github.com/NOAA-EMC/NCEPLIBS-sp.git NCEPLIBS-sp
+        git clone --branch v2.3.3 https://github.com/NOAA-EMC/NCEPLIBS-sp.git NCEPLIBS-sp
         cd NCEPLIBS-sp && mkdir build && cd build
         cmake -DCMAKE_INSTALL_PREFIX=${SPHOME} ../
         make -j2
@@ -72,7 +72,7 @@ jobs:
 
     - name: Install w3emc
       run: |
-        git clone https://github.com/NOAA-EMC/NCEPLIBS-w3emc.git NCEPLIBS-w3emc
+        git clone --branch v2.9.2 https://github.com/NOAA-EMC/NCEPLIBS-w3emc.git NCEPLIBS-w3emc
         cd NCEPLIBS-w3emc && mkdir build && cd build
         cmake -DCMAKE_INSTALL_PREFIX=${WCHOME} ../
         make -j2
