@@ -10,7 +10,7 @@ import shutil
 import subprocess
 import sys
 import time
-from suite_info import suite, suite_list
+from suite_info import suite as set_active_suite, suite_list
 from supported_cases import cases
 from netCDF4 import Dataset
 import importlib
@@ -856,9 +856,9 @@ def main():
             if ("namelist" in run) and ("tracer" in run):
                 irun = irun + 1
                 if timestep: 
-                    active_suite = suite(run["suite"], run["tracer"], run["namelist"], timestep, -1, False)
+                    active_suite = set_active_suite(run["suite"], run["tracer"], run["namelist"], timestep, -1, False)
                 else:
-                    active_suite = suite(run["suite"], run["tracer"], run["namelist"], 600, -1, False)
+                    active_suite = set_active_suite(run["suite"], run["tracer"], run["namelist"], 600, -1, False)
                     #active_suite = suite(run["suite"], run["tracer"], run["namelist"], -1, -1, False) NOT WORKING without timestep defined
             else:
                 message = 'The given suite {0}, does not have defaults set in suite_info.py and either the tracers file or physics namelist file (or both) were not provided.'.format(run["suite"])
