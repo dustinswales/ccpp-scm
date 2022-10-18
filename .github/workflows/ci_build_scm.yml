@@ -55,7 +55,7 @@ jobs:
       run: |
         git clone https://github.com/NOAA-EMC/NCEPLIBS-bacio.git bacio
         cd bacio && mkdir build && cd build
-        cmake ../ -DCMAKE_INSTALL_PREFIX=${BCHOME}
+        cmake -DCMAKE_INSTALL_PREFIX=${BCHOME} ../
         make -j2
         make install
         echo "bacio_DIR=/home/runner/bacio/lib/cmake/bacio" >> $GITHUB_ENV
