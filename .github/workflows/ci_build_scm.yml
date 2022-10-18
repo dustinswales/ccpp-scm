@@ -84,7 +84,7 @@ jobs:
     - name: Install cmake
       run: pip3 install cmake ninja fypp
 
-    - name: Configure build
+    - name: Configure build with CMake
       run: |
         cd /home/runner/work/ccpp-scm/ccpp-scm/scm
         mkdir bin && cd bin
@@ -97,4 +97,5 @@ jobs:
 
     - name: Run SCM RTs
       run: |
-        ./run_scm.py --file /home/runner/work/ccpp-scm/ccpp-scm/test/rt_test_cases.py
+        cd /home/runner/work/ccpp-scm/ccpp-scm/scm/bin
+        ./run_scm.py -c bomex -s SCM_GFS_v16
