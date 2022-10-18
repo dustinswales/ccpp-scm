@@ -58,7 +58,7 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX=${BCHOME} ../
         make -j2
         make install
-        echo "bacio_DIR=/home/runner/bacio" >> $GITHUB_ENV
+        echo "bacio_DIR=/home/runner/bacio/lib/cmake/bacio" >> $GITHUB_ENV
 
     - name: Install SPlib
       run: |
@@ -95,9 +95,9 @@ jobs:
 
     - name: Set up NCEPlibs
       run: |
-        echo "bacio_ROOT=${BCHOME}/lib" >> $GITHUB_ENV
-        echo "sp_ROOT=${SPHOME}/lib"    >> $GITHUB_ENV
-        echo "w3emc_ROOT=${WCHOME}/lib"	>> $GITHUB_ENV
+        echo "bacio_ROOT=${BCHOME}" >> $GITHUB_ENV
+        echo "sp_ROOT=${SPHOME}"    >> $GITHUB_ENV
+        echo "w3emc_ROOT=${WCHOME}" >> $GITHUB_ENV
 
     ###############################################################################
     #
