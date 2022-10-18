@@ -14,13 +14,11 @@ jobs:
       bacio_ROOT: /home/runner/bacio
       sp_ROOT:    /home/runner/NCEPLIBS-sp
       w3emc_ROOT: /home/runner/myw3emc
-      CMAKE_OPTIONS: >-
-        -DCMAKE_BUILD_TYPE=Debug
 
     # Workflow steps
     steps:
 
-    - name: Checkout SCM code
+    - name: Checkout SCM code (into /home/runner/work/ccpp-scm/)
       uses: actions/checkout@v3
 
     - name: Initialize submodules
@@ -81,9 +79,6 @@ jobs:
         ./configure
         make -j
         sudo make install
-
-    - name: Add NETCDF to LD_LIBRARY_PATH
-      run: |
         export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${NFHOME}/lib
 
     - name: Install cmake
@@ -93,10 +88,13 @@ jobs:
       run: |
         cd /home/runner/work/ccpp-scm/ccpp-scm/scm
         mkdir bin && cd bin
-        cmake ../src ${CMAKE_OPTIONS}
+        cmake ../src
 
-    - name: Make
+    - name: Make SCM
       run: |
         cd /home/runner/work/ccpp-scm/ccpp-scm/scm/bin
-        ls
         make -j4
+
+    - name: Run SCM RTs
+      run: |
+        ./run_scm.py --file /home/runner/work/ccpp-scm/ccpp-scm/test/rt_test_cases.py
