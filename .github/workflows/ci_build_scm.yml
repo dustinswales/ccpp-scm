@@ -35,7 +35,9 @@ jobs:
         echo $CONDA/bin >> $GITHUB_PATH
 
     - name: Install python libraries
-      run: conda install --yes -c conda-forge f90nml,netCDF4
+      run: |
+        conda install --yes -c conda-forge f90nml
+        conda install --yes -c conda-forge netCDF4
 
     - name: Set compiler
       run: |
