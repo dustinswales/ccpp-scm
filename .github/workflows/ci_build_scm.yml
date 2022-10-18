@@ -92,9 +92,12 @@ jobs:
     - name: Add NETCDF to LD_LIBRARY_PATH
       run: |
         export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${NFHOME}/lib
-        export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${BCHOME}/lib
-        export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${SPHOME}/lib
-        export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${WCHOME}/lib
+
+    - name: Add libraries to CMAKE_SOURCE_DIR
+      run: |
+        export CMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR}:${BCHOME}/lib
+        export CMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR}:${SPHOME}/lib
+        export CMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR}:${WCHOME}/lib
 
     ###############################################################################
     #
