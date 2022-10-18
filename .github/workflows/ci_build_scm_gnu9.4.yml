@@ -107,7 +107,7 @@ jobs:
         cd /home/runner/work/ccpp-scm/ccpp-scm/scm/bin
         make -j4
 
-    - name: Run SCM
+    - name: Run SCM RTs
       run: |
         cd /home/runner/work/ccpp-scm/ccpp-scm/scm/bin
-        ./run_scm.py -c bomex -s SCM_GFS_v16
+        ./run_scm.py --file /home/runner/work/ccpp-scm/ccpp-scm/test/rt_test_cases.py
