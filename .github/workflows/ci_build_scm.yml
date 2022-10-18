@@ -97,4 +97,6 @@ jobs:
 
     - name: Make
       run: |
+        cd /home/runner/work/ccpp-scm/ccpp-scm/scm/bin
+        ls
         make -j4
