@@ -27,6 +27,7 @@ VARIABLE_DEFINITION_FILES = [
     'ccpp/physics/physics/rte-rrtmgp/rte/mo_optical_props.F90',
     'ccpp/physics/physics/rte-rrtmgp/extensions/cloud_optics/mo_cloud_optics.F90',
     'ccpp/physics/physics/rte-rrtmgp/rte/mo_source_functions.F90',
+    'ccpp/physics/physics/cosp_kinds.F90',
     'scm/src/CCPP_typedefs.F90',
     'scm/src/GFS_typedefs.F90',
     'scm/src/scm_kinds.F90',
@@ -237,7 +238,9 @@ SCHEME_FILES = [
     'ccpp/physics/physics/GFS_cloud_diagnostics.F90'        ,
     'ccpp/physics/physics/GFS_rrtmgp_cloud_mp.F90'          ,
     'ccpp/physics/physics/GFS_rrtmgp_cloud_overlap.F90'     ,
-    'ccpp/physics/physics/GFS_rrtmgp_sw_post.F90'
+    'ccpp/physics/physics/GFS_rrtmgp_sw_post.F90'           ,
+    # COSP
+    'ccpp/physics/physics/GFS_cosp.F90'
     ]
 
 # Default build dir, relative to current working directory,

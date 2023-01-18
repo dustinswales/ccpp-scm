@@ -793,6 +793,16 @@ module GFS_typedefs
     integer              :: iSFC                    !< Vertical index for surface
     integer              :: iTOA                    !< Vertical index for TOA
 
+    ! COSP
+    logical              :: do_cosp_isccp           !< If true, create COSP ISCCP simulator diagnostics
+    logical              :: do_cosp_modis           !< If true, create COSP MODIS simulator diagnostics
+    logical              :: do_cosp_misr            !< If true, create COSP MISR simulator diagnostics
+    logical              :: do_cosp_cloudsat        !< If true, create COSP Cloudsat RADAR simulator diagnostics
+    logical              :: do_cosp_calipso         !< If true, create COSP Calipso LIDAR simulator diagnostics
+    logical              :: do_cosp_grLidar532      !< If true, create COSP Ground-based 532nm Lidar simulator diagnostics
+    logical              :: do_cosp_atlid           !< If true, create COSP EarthCase Lidar simulator diagnostics
+    logical              :: do_cosp_parasol         !< If true, create COSP PARASOL simulator diagnostics
+
 !--- microphysical switch
     logical              :: convert_dry_rho = .true.       !< flag for converting mass/number concentrations from moist to dry
                                                            !< for physics options that expect dry mass/number concentrations;
@@ -3014,6 +3024,17 @@ module GFS_typedefs
     logical              :: doGP_sgs_cnv        = .false.    !< If true, include SubGridScale convective cloud in RRTMGP
     logical              :: doGP_sgs_mynn       = .false.    !< If true, include SubGridScale MYNN-EDMF cloud in RRTMGP
     logical              :: doGP_smearclds      = .true.     !< If true, include implicit SubGridScale clouds in RRTMGP 
+
+    ! COSP
+    logical              :: do_cosp_isccp       = .false.    !< If true, create COSP ISCCP simulator diagnostics
+    logical              :: do_cosp_modis       = .false.    !< If true, create COSP MODIS simulator diagnostics 
+    logical              :: do_cosp_misr        = .false.    !< If true, create COSP MISR simulator diagnostics 
+    logical              :: do_cosp_cloudsat    = .false.    !< If true, create COSP Cloudsat RADAR simulator diagnostics 
+    logical              :: do_cosp_calipso     = .false.    !< If true, create COSP Calipso LIDAR simulator diagnostics 
+    logical              :: do_cosp_grLidar532  = .false.    !< If true, create COSP Ground-based 532nm Lidar simulator diagnostics 
+    logical              :: do_cosp_atlid       = .false.    !< If true, create COSP EarthCase Lidar simulator diagnostics 
+    logical              :: do_cosp_parasol     = .false.    !< If true, create COSP PARASOL simulator diagnostics 
+
 !--- Z-C microphysical parameters
     integer              :: imp_physics       =  99                !< choice of cloud scheme
     real(kind=kind_phys) :: psautco(2)        = (/6.0d-4,3.0d-4/)  !< [in] auto conversion coeff from ice to snow

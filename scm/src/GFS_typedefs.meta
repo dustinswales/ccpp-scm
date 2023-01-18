@@ -3542,6 +3542,54 @@
   units = flag
   dimensions = ()
   type = integer
+[do_cosp_isccp]
+  standard_name = flag_for_cosp_isccp_simulator
+  long_name = flag for COSP ISCCP simulator
+  units = flag
+  dimensions = ()
+  type = logical
+[do_cosp_modis]
+  standard_name = flag_for_cosp_modis_simulator
+  long_name = flag for COSP MODIS simulator
+  units = flag
+  dimensions = ()
+  type = logical
+[do_cosp_misr]
+  standard_name = flag_for_cosp_misr_simulator
+  long_name = flag for COSP MODIS simulator
+  units = flag
+  dimensions = ()
+  type = logical
+[do_cosp_cloudsat]
+  standard_name = flag_for_cosp_cloudsat_radar_simulator
+  long_name = flag for COSP CloudSat RADAR simulator
+  units = flag
+  dimensions = ()
+  type = logical
+[do_cosp_calipso]
+  standard_name = flag_for_cosp_calipso_lidar_simulator
+  long_name = flag for COSP Calipso LIDAR simulator
+  units = flag
+  dimensions = ()
+  type = logical
+[do_cosp_grLidar532]
+  standard_name = flag_for_cosp_532nm_ground_lidar_simulator
+  long_name = flag for COSP 532nm ground based LIDAR simulator
+  units = flag
+  dimensions = ()
+  type = logical
+[do_cosp_atlid]
+  standard_name = flag_for_cosp_earthcare_lidar_simulator
+  long_name = flag for COSP EarthCare LIDAR simulator
+  units = flag
+  dimensions = ()
+  type = logical
+[do_cosp_parasol]
+  standard_name = flag_for_cosp_parasol_simulator
+  long_name = flag for COSP Parasol simulator
+  units = flag
+  dimensions = ()
+  type = logical
 [convert_dry_rho]
   standard_name = flag_for_converting_hydrometeors_from_moist_to_dry_air
   long_name = flag for converting hydrometeors from moist to dry air
