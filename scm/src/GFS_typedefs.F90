@@ -1946,6 +1946,17 @@ module GFS_typedefs
     real (kind=kind_phys), pointer :: aux2d(:,:)  => null()    !< auxiliary 2d arrays in output (for debugging)
     real (kind=kind_phys), pointer :: aux3d(:,:,:)=> null()    !< auxiliary 2d arrays in output (for debugging)
 
+    ! CFMIP Observational Simulator Package (COSP)
+    real (kind=kind_phys), pointer :: cosp_isccp_f1(:,:,:)     => null()
+    real (kind=kind_phys), pointer :: cosp_isccp_cldtot(:)     => null()
+    real (kind=kind_phys), pointer :: cosp_isccp_meancldalb(:) => null()
+    real (kind=kind_phys), pointer :: cosp_isccp_meanptop(:)   => null()
+    real (kind=kind_phys), pointer :: cosp_isccp_meantau(:)    => null()
+    real (kind=kind_phys), pointer :: cosp_isccp_meantb(:)     => null()
+    real (kind=kind_phys), pointer :: cosp_isccp_meantbclr(:)  => null()
+    real (kind=kind_phys), pointer :: cosp_isccp_tau(:,:)      => null()
+    real (kind=kind_phys), pointer :: cosp_isccp_cldptop(:,:)  => null()
+
     contains
       procedure :: create    => diag_create
       procedure :: rad_zero  => diag_rad_zero
@@ -7117,6 +7128,45 @@ module GFS_typedefs
       Diag%aux3d = clear_val
     endif
 
+    ! CFMIP Observational Simulator Package (COSP)
+    if (Model%do_cosp) then
+       if (Model%do_cosp_isccp) then
+          allocate(Diag%cosp_isccp_f1(IM,7,7))
+          allocate(Diag%cosp_isccp_cldtot(IM))
+          allocate(Diag%cosp_isccp_meancldalb(IM))
+          allocate(Diag%cosp_isccp_meanptop(IM))
+          allocate(Diag%cosp_isccp_meantau(IM))
+          allocate(Diag%cosp_isccp_meantb(IM))
+          allocate(Diag%cosp_isccp_meantbclr(IM))
+          allocate(Diag%cosp_isccp_tau(IM,Model%cosp_nsubcol))
+          allocate(Diag%cosp_isccp_cldptop(IM,Model%cosp_nsubcol))
+          Diag%cosp_isccp_f1         = clear_val
+          Diag%cosp_isccp_cldtot     = clear_val
+          Diag%cosp_isccp_meancldalb = clear_val
+          Diag%cosp_isccp_meanptop   = clear_val
+          Diag%cosp_isccp_meantau    = clear_val
+          Diag%cosp_isccp_meantb     = clear_val
+          Diag%cosp_isccp_meantbclr  = clear_val
+          Diag%cosp_isccp_tau        = clear_val
+          Diag%cosp_isccp_cldptop    = clear_val
+       endif
+       if (Model%do_cosp_modis) then
+       endif
+       if (Model%do_cosp_misr) then
+       endif
+       if (Model%do_cosp_cloudsat) then
+       endif
+       if (Model%do_cosp_calipso) then
+       endif
+       if (Model%do_cosp_grLidar532) then
+       endif
+       if (Model%do_cosp_atlid) then
+       endif
+       if (Model%do_cosp_parasol) then
+       endif
+    endif
+
+
     call Diag%rad_zero  (Model)
 !    if(Model%me==0) print *,'in diag_create, call rad_zero'
     linit = .true.
@@ -7382,6 +7432,21 @@ module GFS_typedefs
       Diag%totice  = zero
       Diag%totsnw  = zero
       Diag%totgrp  = zero
+    endif
+
+    ! COSP
+    if (Model%do_cosp) then
+       if (Model%do_cosp_isccp) then
+          Diag%cosp_isccp_f1         = zero
+          Diag%cosp_isccp_cldtot     = zero
+          Diag%cosp_isccp_meancldalb = zero
+          Diag%cosp_isccp_meanptop   = zero
+          Diag%cosp_isccp_meantau    = zero
+          Diag%cosp_isccp_meantb     = zero
+          Diag%cosp_isccp_meantbclr  = zero
+          Diag%cosp_isccp_tau        = zero
+          Diag%cosp_isccp_cldptop    = zero
+       endif
     endif
 
   end subroutine diag_phys_zero
