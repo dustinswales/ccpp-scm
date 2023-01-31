@@ -3542,6 +3542,12 @@
   units = flag
   dimensions = ()
   type = integer
+[do_cosp]
+  standard_name = flag_for_cosp_diagnostics
+  long_name = flag for COSP diagnostics
+  units = flag
+  dimensions = ()
+  type = logical
 [do_cosp_isccp]
   standard_name = flag_for_cosp_isccp_simulator
   long_name = flag for COSP ISCCP simulator
@@ -3590,6 +3596,18 @@
   units = flag
   dimensions = ()
   type = logical
+[cosp_nsubcol]
+  standard_name = number_of_sub_columns_in_cosp
+  long_name = number of subcolumns used in COSP
+  units = count
+  dimensions = ()
+  type = integer
+[cosp_nlvgrid]
+  standard_name = number_of_vertical_levels_in_COSP_statistical_output
+  long_name = number of vertical levels in COSP CloudSat and Calipso diagnostics
+  units = count
+  dimensions = ()
+  type = integer
 [convert_dry_rho]
   standard_name = flag_for_converting_hydrometeors_from_moist_to_dry_air
   long_name = flag for converting hydrometeors from moist to dry air

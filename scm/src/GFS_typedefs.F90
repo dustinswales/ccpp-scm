@@ -794,6 +794,7 @@ module GFS_typedefs
     integer              :: iTOA                    !< Vertical index for TOA
 
     ! COSP
+    logical              :: do_cosp                 !< If true, using COSP
     logical              :: do_cosp_isccp           !< If true, create COSP ISCCP simulator diagnostics
     logical              :: do_cosp_modis           !< If true, create COSP MODIS simulator diagnostics
     logical              :: do_cosp_misr            !< If true, create COSP MISR simulator diagnostics
@@ -802,7 +803,8 @@ module GFS_typedefs
     logical              :: do_cosp_grLidar532      !< If true, create COSP Ground-based 532nm Lidar simulator diagnostics
     logical              :: do_cosp_atlid           !< If true, create COSP EarthCase Lidar simulator diagnostics
     logical              :: do_cosp_parasol         !< If true, create COSP PARASOL simulator diagnostics
-
+    integer              :: cosp_nsubcol            !< Number of subcolumns in SCOPS (50), COSP subcolumn generator
+    integer              :: cosp_nlvgrid            !< Number of levels in COSP cloudsat/calipsostatistical outputs 
 !--- microphysical switch
     logical              :: convert_dry_rho = .true.       !< flag for converting mass/number concentrations from moist to dry
                                                            !< for physics options that expect dry mass/number concentrations;
@@ -3026,6 +3028,7 @@ module GFS_typedefs
     logical              :: doGP_smearclds      = .true.     !< If true, include implicit SubGridScale clouds in RRTMGP 
 
     ! COSP
+    logical              :: do_cosp             = .false.    !< If true, using COSP 
     logical              :: do_cosp_isccp       = .false.    !< If true, create COSP ISCCP simulator diagnostics
     logical              :: do_cosp_modis       = .false.    !< If true, create COSP MODIS simulator diagnostics 
     logical              :: do_cosp_misr        = .false.    !< If true, create COSP MISR simulator diagnostics 
@@ -3034,6 +3037,8 @@ module GFS_typedefs
     logical              :: do_cosp_grLidar532  = .false.    !< If true, create COSP Ground-based 532nm Lidar simulator diagnostics 
     logical              :: do_cosp_atlid       = .false.    !< If true, create COSP EarthCase Lidar simulator diagnostics 
     logical              :: do_cosp_parasol     = .false.    !< If true, create COSP PARASOL simulator diagnostics 
+    integer              :: cosp_nsubcol        = 50         !< Number of subcolumns in SCOPS (50), COSP subcolumn generator
+    integer              :: cosp_nlvgrid        = 40         !< Number of levels in COSP cloudsat/calipsostatistical outputs
 
 !--- Z-C microphysical parameters
     integer              :: imp_physics       =  99                !< choice of cloud scheme
@@ -3497,6 +3502,10 @@ module GFS_typedefs
                                rrtmgp_nrghice, rrtmgp_nGauss_ang, do_GPsw_Glw,              &
                                use_LW_jacobian, doGP_lwscat, damp_LW_fluxadj, lfnc_k,       &
                                lfnc_p0, iovr_convcld, doGP_sgs_cnv, doGP_sgs_mynn,          &
+                          ! --- COSP
+                               do_cosp_isccp, do_cosp_modis, do_cosp_misr, do_cosp_cloudsat,&
+                               do_cosp_calipso, do_cosp_grLidar532, do_cosp_atlid,          &
+                               do_cosp_parasol, cosp_nsubcol, cosp_nlvgrid,                 &
                           ! IN CCN forcing
                                iccn, mraerosol,                                             &
                           !--- microphysical parameterizations
@@ -4011,6 +4020,23 @@ module GFS_typedefs
              " of the lw/sw heating rates to be turned on (namelist options lwhtr and swhtr)"
       stop
     end if
+
+    ! COSP
+    Model%do_cosp_isccp      = do_cosp_isccp
+    Model%do_cosp_modis      = do_cosp_modis
+    Model%do_cosp_misr       = do_cosp_misr
+    Model%do_cosp_cloudsat   = do_cosp_cloudsat
+    Model%do_cosp_calipso    = do_cosp_calipso
+    Model%do_cosp_grLidar532 = do_cosp_grLidar532
+    Model%do_cosp_atlid      = do_cosp_atlid
+    Model%do_cosp_parasol    = do_cosp_parasol
+    Model%cosp_nsubcol       = cosp_nsubcol
+    Model%cosp_nlvgrid       = cosp_nlvgrid
+    if (Model%do_cosp_isccp     .or. Model%do_cosp_modis   .or. Model%do_cosp_misr .or. &
+         Model%do_cosp_cloudsat .or. Model%do_cosp_calipso .or. Model%do_cosp_grLidar532 .or. &
+         Model%do_cosp_atlid    .or. Model%do_cosp_parasol) then
+       Model%do_cosp = .true.
+    endif
 
 !--- microphysical switch
     Model%imp_physics      = imp_physics
