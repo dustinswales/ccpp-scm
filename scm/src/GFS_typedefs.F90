@@ -6,6 +6,8 @@ module GFS_typedefs
    use module_radlw_parameters,  only: topflw_type, sfcflw_type
    use ozne_def,                 only: levozp, oz_coeff
    use h2o_def,                  only: levh2o, h2o_coeff
+   use mod_cosp,                 only: cosp_outputs
+   use mod_cosp_config,          only: numISCCPTauBins, numISCCPPresBins
 
    implicit none
 
@@ -793,18 +795,6 @@ module GFS_typedefs
     integer              :: iSFC                    !< Vertical index for surface
     integer              :: iTOA                    !< Vertical index for TOA
 
-    ! COSP
-    logical              :: do_cosp                 !< If true, using COSP
-    logical              :: do_cosp_isccp           !< If true, create COSP ISCCP simulator diagnostics
-    logical              :: do_cosp_modis           !< If true, create COSP MODIS simulator diagnostics
-    logical              :: do_cosp_misr            !< If true, create COSP MISR simulator diagnostics
-    logical              :: do_cosp_cloudsat        !< If true, create COSP Cloudsat RADAR simulator diagnostics
-    logical              :: do_cosp_calipso         !< If true, create COSP Calipso LIDAR simulator diagnostics
-    logical              :: do_cosp_grLidar532      !< If true, create COSP Ground-based 532nm Lidar simulator diagnostics
-    logical              :: do_cosp_atlid           !< If true, create COSP EarthCase Lidar simulator diagnostics
-    logical              :: do_cosp_parasol         !< If true, create COSP PARASOL simulator diagnostics
-    integer              :: cosp_nsubcol            !< Number of subcolumns in SCOPS (50), COSP subcolumn generator
-    integer              :: cosp_nlvgrid            !< Number of levels in COSP cloudsat/calipsostatistical outputs 
 !--- microphysical switch
     logical              :: convert_dry_rho = .true.       !< flag for converting mass/number concentrations from moist to dry
                                                            !< for physics options that expect dry mass/number concentrations;
@@ -1946,16 +1936,8 @@ module GFS_typedefs
     real (kind=kind_phys), pointer :: aux2d(:,:)  => null()    !< auxiliary 2d arrays in output (for debugging)
     real (kind=kind_phys), pointer :: aux3d(:,:,:)=> null()    !< auxiliary 2d arrays in output (for debugging)
 
-    ! CFMIP Observational Simulator Package (COSP)
-    real (kind=kind_phys), pointer :: cosp_isccp_f1(:,:,:)     => null()
-    real (kind=kind_phys), pointer :: cosp_isccp_cldtot(:)     => null()
-    real (kind=kind_phys), pointer :: cosp_isccp_meancldalb(:) => null()
-    real (kind=kind_phys), pointer :: cosp_isccp_meanptop(:)   => null()
-    real (kind=kind_phys), pointer :: cosp_isccp_meantau(:)    => null()
-    real (kind=kind_phys), pointer :: cosp_isccp_meantb(:)     => null()
-    real (kind=kind_phys), pointer :: cosp_isccp_meantbclr(:)  => null()
-    real (kind=kind_phys), pointer :: cosp_isccp_tau(:,:)      => null()
-    real (kind=kind_phys), pointer :: cosp_isccp_cldptop(:,:)  => null()
+    ! COSP
+    type (cosp_outputs) :: cosp_diag
 
     contains
       procedure :: create    => diag_create
@@ -3038,19 +3020,6 @@ module GFS_typedefs
     logical              :: doGP_sgs_mynn       = .false.    !< If true, include SubGridScale MYNN-EDMF cloud in RRTMGP
     logical              :: doGP_smearclds      = .true.     !< If true, include implicit SubGridScale clouds in RRTMGP 
 
-    ! COSP
-    logical              :: do_cosp             = .false.    !< If true, using COSP 
-    logical              :: do_cosp_isccp       = .false.    !< If true, create COSP ISCCP simulator diagnostics
-    logical              :: do_cosp_modis       = .false.    !< If true, create COSP MODIS simulator diagnostics 
-    logical              :: do_cosp_misr        = .false.    !< If true, create COSP MISR simulator diagnostics 
-    logical              :: do_cosp_cloudsat    = .false.    !< If true, create COSP Cloudsat RADAR simulator diagnostics 
-    logical              :: do_cosp_calipso     = .false.    !< If true, create COSP Calipso LIDAR simulator diagnostics 
-    logical              :: do_cosp_grLidar532  = .false.    !< If true, create COSP Ground-based 532nm Lidar simulator diagnostics 
-    logical              :: do_cosp_atlid       = .false.    !< If true, create COSP EarthCase Lidar simulator diagnostics 
-    logical              :: do_cosp_parasol     = .false.    !< If true, create COSP PARASOL simulator diagnostics 
-    integer              :: cosp_nsubcol        = 50         !< Number of subcolumns in SCOPS (50), COSP subcolumn generator
-    integer              :: cosp_nlvgrid        = 40         !< Number of levels in COSP cloudsat/calipsostatistical outputs
-
 !--- Z-C microphysical parameters
     integer              :: imp_physics       =  99                !< choice of cloud scheme
     real(kind=kind_phys) :: psautco(2)        = (/6.0d-4,3.0d-4/)  !< [in] auto conversion coeff from ice to snow
@@ -3513,10 +3482,6 @@ module GFS_typedefs
                                rrtmgp_nrghice, rrtmgp_nGauss_ang, do_GPsw_Glw,              &
                                use_LW_jacobian, doGP_lwscat, damp_LW_fluxadj, lfnc_k,       &
                                lfnc_p0, iovr_convcld, doGP_sgs_cnv, doGP_sgs_mynn,          &
-                          ! --- COSP
-                               do_cosp_isccp, do_cosp_modis, do_cosp_misr, do_cosp_cloudsat,&
-                               do_cosp_calipso, do_cosp_grLidar532, do_cosp_atlid,          &
-                               do_cosp_parasol, cosp_nsubcol, cosp_nlvgrid,                 &
                           ! IN CCN forcing
                                iccn, mraerosol,                                             &
                           !--- microphysical parameterizations
@@ -4031,23 +3996,6 @@ module GFS_typedefs
              " of the lw/sw heating rates to be turned on (namelist options lwhtr and swhtr)"
       stop
     end if
-
-    ! COSP
-    Model%do_cosp_isccp      = do_cosp_isccp
-    Model%do_cosp_modis      = do_cosp_modis
-    Model%do_cosp_misr       = do_cosp_misr
-    Model%do_cosp_cloudsat   = do_cosp_cloudsat
-    Model%do_cosp_calipso    = do_cosp_calipso
-    Model%do_cosp_grLidar532 = do_cosp_grLidar532
-    Model%do_cosp_atlid      = do_cosp_atlid
-    Model%do_cosp_parasol    = do_cosp_parasol
-    Model%cosp_nsubcol       = cosp_nsubcol
-    Model%cosp_nlvgrid       = cosp_nlvgrid
-    if (Model%do_cosp_isccp     .or. Model%do_cosp_modis   .or. Model%do_cosp_misr .or. &
-         Model%do_cosp_cloudsat .or. Model%do_cosp_calipso .or. Model%do_cosp_grLidar532 .or. &
-         Model%do_cosp_atlid    .or. Model%do_cosp_parasol) then
-       Model%do_cosp = .true.
-    endif
 
 !--- microphysical switch
     Model%imp_physics      = imp_physics
@@ -7128,45 +7076,6 @@ module GFS_typedefs
       Diag%aux3d = clear_val
     endif
 
-    ! CFMIP Observational Simulator Package (COSP)
-    if (Model%do_cosp) then
-       if (Model%do_cosp_isccp) then
-          allocate(Diag%cosp_isccp_f1(IM,7,7))
-          allocate(Diag%cosp_isccp_cldtot(IM))
-          allocate(Diag%cosp_isccp_meancldalb(IM))
-          allocate(Diag%cosp_isccp_meanptop(IM))
-          allocate(Diag%cosp_isccp_meantau(IM))
-          allocate(Diag%cosp_isccp_meantb(IM))
-          allocate(Diag%cosp_isccp_meantbclr(IM))
-          allocate(Diag%cosp_isccp_tau(IM,Model%cosp_nsubcol))
-          allocate(Diag%cosp_isccp_cldptop(IM,Model%cosp_nsubcol))
-          Diag%cosp_isccp_f1         = clear_val
-          Diag%cosp_isccp_cldtot     = clear_val
-          Diag%cosp_isccp_meancldalb = clear_val
-          Diag%cosp_isccp_meanptop   = clear_val
-          Diag%cosp_isccp_meantau    = clear_val
-          Diag%cosp_isccp_meantb     = clear_val
-          Diag%cosp_isccp_meantbclr  = clear_val
-          Diag%cosp_isccp_tau        = clear_val
-          Diag%cosp_isccp_cldptop    = clear_val
-       endif
-       if (Model%do_cosp_modis) then
-       endif
-       if (Model%do_cosp_misr) then
-       endif
-       if (Model%do_cosp_cloudsat) then
-       endif
-       if (Model%do_cosp_calipso) then
-       endif
-       if (Model%do_cosp_grLidar532) then
-       endif
-       if (Model%do_cosp_atlid) then
-       endif
-       if (Model%do_cosp_parasol) then
-       endif
-    endif
-
-
     call Diag%rad_zero  (Model)
 !    if(Model%me==0) print *,'in diag_create, call rad_zero'
     linit = .true.
@@ -7432,21 +7341,6 @@ module GFS_typedefs
       Diag%totice  = zero
       Diag%totsnw  = zero
       Diag%totgrp  = zero
-    endif
-
-    ! COSP
-    if (Model%do_cosp) then
-       if (Model%do_cosp_isccp) then
-          Diag%cosp_isccp_f1         = zero
-          Diag%cosp_isccp_cldtot     = zero
-          Diag%cosp_isccp_meancldalb = zero
-          Diag%cosp_isccp_meanptop   = zero
-          Diag%cosp_isccp_meantau    = zero
-          Diag%cosp_isccp_meantb     = zero
-          Diag%cosp_isccp_meantbclr  = zero
-          Diag%cosp_isccp_tau        = zero
-          Diag%cosp_isccp_cldptop    = zero
-       endif
     endif
 
   end subroutine diag_phys_zero

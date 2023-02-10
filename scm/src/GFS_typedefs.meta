@@ -3542,72 +3542,6 @@
   units = flag
   dimensions = ()
   type = integer
-[do_cosp]
-  standard_name = flag_for_cosp_diagnostics
-  long_name = flag for COSP diagnostics
-  units = flag
-  dimensions = ()
-  type = logical
-[do_cosp_isccp]
-  standard_name = flag_for_cosp_isccp_simulator
-  long_name = flag for COSP ISCCP simulator
-  units = flag
-  dimensions = ()
-  type = logical
-[do_cosp_modis]
-  standard_name = flag_for_cosp_modis_simulator
-  long_name = flag for COSP MODIS simulator
-  units = flag
-  dimensions = ()
-  type = logical
-[do_cosp_misr]
-  standard_name = flag_for_cosp_misr_simulator
-  long_name = flag for COSP MODIS simulator
-  units = flag
-  dimensions = ()
-  type = logical
-[do_cosp_cloudsat]
-  standard_name = flag_for_cosp_cloudsat_radar_simulator
-  long_name = flag for COSP CloudSat RADAR simulator
-  units = flag
-  dimensions = ()
-  type = logical
-[do_cosp_calipso]
-  standard_name = flag_for_cosp_calipso_lidar_simulator
-  long_name = flag for COSP Calipso LIDAR simulator
-  units = flag
-  dimensions = ()
-  type = logical
-[do_cosp_grLidar532]
-  standard_name = flag_for_cosp_532nm_ground_lidar_simulator
-  long_name = flag for COSP 532nm ground based LIDAR simulator
-  units = flag
-  dimensions = ()
-  type = logical
-[do_cosp_atlid]
-  standard_name = flag_for_cosp_earthcare_lidar_simulator
-  long_name = flag for COSP EarthCare LIDAR simulator
-  units = flag
-  dimensions = ()
-  type = logical
-[do_cosp_parasol]
-  standard_name = flag_for_cosp_parasol_simulator
-  long_name = flag for COSP Parasol simulator
-  units = flag
-  dimensions = ()
-  type = logical
-[cosp_nsubcol]
-  standard_name = number_of_sub_columns_in_cosp
-  long_name = number of subcolumns used in COSP
-  units = count
-  dimensions = ()
-  type = integer
-[cosp_nlvgrid]
-  standard_name = number_of_vertical_levels_in_COSP_statistical_output
-  long_name = number of vertical levels in COSP CloudSat and Calipso diagnostics
-  units = count
-  dimensions = ()
-  type = integer
 [convert_dry_rho]
   standard_name = flag_for_converting_hydrometeors_from_moist_to_dry_air
   long_name = flag for converting hydrometeors from moist to dry air
@@ -8774,69 +8708,6 @@
   dimensions = (horizontal_loop_extent)
   type = real
   kind = kind_phys
-[cosp_isccp_f1]
-  standard_name = COSP_ISCCP_cfad
-  long_name = Grid-box fraction covered by each ISCCP D level cloud type
-  units = frac
-  dimensions = (horizontal_loop_extent,7,7)
-  type = real
-  kind = kind_phys
-[cosp_isccp_cldtot]
-  standard_name = COSP_ISCCP_total_cloud_fraction
-  long_name = COSP ISCCP total cloud fraction
-  units	    = frac
-  dimensions = (horizontal_loop_extent)
-  type = real
-  kind = kind_phys
-[cosp_isccp_meancldalb]
-  standard_name = COSP_ISCCP_mean_cloud_albedo
-  long_name = COSP ISCCP mean cloud albedo
-  units	    = 1
-  dimensions = (horizontal_loop_extent)
-  type = real
-  kind = kind_phys
-[cosp_isccp_meanptop]
-  standard_name = cosp_isccp_mean_cloud_top_pressure
-  long_name = COSP ISCCP mean cloud top pressure
-  units	    = Pa
-  dimensions = (horizontal_loop_extent)
-  type = real
-  kind = kind_phys
-[cosp_isccp_meantau]
-  standard_name = cosp_isccp_mean_optical_depth
-  long_name = COSP ISCCP mean optical depth
-  units	    = 1
-  dimensions = (horizontal_loop_extent)
-  type = real
-  kind = kind_phys
-[cosp_isccp_meantb]
-  standard_name = cosp_isccp_mean_total_sky_brightness_temperature
-  long_name = COSP ISCCP mean total-sky brightness temperature
-  units	    = K
-  dimensions = (horizontal_loop_extent)
-  type = real
-  kind = kind_phys
-[cosp_isccp_meantbclr]
-  standard_name = cosp_isccp_mean_clear_sky_brightness_temperature
-  long_name = COSP ISCCP clear-sky brightness temperature
-  units	    = K
-  dimensions = (horizontal_loop_extent)
-  type = real
-  kind = kind_phys
-[cosp_isccp_tau]
-  standard_name = cosp_isccp_subcolumn_optical_depth
-  long_name = COSP ISCCP subcolumn optical depth
-  units	    = 1
-  dimensions = (horizontal_loop_extent,number_of_sub_columns_in_cosp)
-  type = real
-  kind = kind_phys
-[cosp_isccp_cldptop]
-  standard_name = cosp_isccp_subcolumn_cloud_top_pressure
-  long_name = COSP ISCCP subcolumn cloud top pressure
-  units	    = Pa
-  dimensions = (horizontal_loop_extent,number_of_sub_columns_in_cosp)
-  type = real
-  kind = kind_phys
 
 ########################################################################
 [ccpp-table-properties]
@@ -8844,7 +8715,7 @@
   type = module
   relative_path = ../../ccpp/physics/physics
   dependencies = machine.F,physcons.F90,radlw_param.f,radsw_param.f
-  dependencies = GFDL_parse_tracers.F90,h2o_def.f,ozne_def.f
+  dependencies = GFDL_parse_tracers.F90,h2o_def.f,ozne_def.f,cosp/src/cosp.F90,cosp/src/cosp_config.F90
 
 [ccpp-arg-table]
   name = GFS_typedefs
