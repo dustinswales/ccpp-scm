@@ -76,7 +76,6 @@
     swhtr = .true.
     trans_trac = .true.
     use_ufo = .true.
-    do_cosp_isccp = .true.
 /
 
 &gfdl_cloud_microphysics_nml
@@ -142,4 +141,27 @@
     knob_ugwp_version = 0
     knob_ugwp_wvspec = 1, 25, 25, 25
     launch_level = 27
+/
+
+&cosp_diag_nml
+    do_isccp        = .true.
+    do_misr         = .true.
+    do_modis        = .true.
+    do_cloudsat     = .true.
+    do_calipso      = .true.
+    do_grLidar532   = .true.
+    do_atlid        = .false.
+    do_parasol      = .false.
+    cosp_nsubcol    = 10
+    cosp_nlvgrid    = 40
+    use_vgrid       = .true.
+    csat_vgrid      = .true.
+    csat_freq       = 94.
+    csat_gas_abs    = 1
+    csat_do_ray     = 0
+    csat_k2         = -1
+    lidar_ice_type  = 0
+    overlap         = 3
+    isccp_topht     = 1
+    isccp_topht_dir = 2
 /

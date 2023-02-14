@@ -77,7 +77,7 @@
       <scheme>GFS_MP_generic_post</scheme>
       <scheme>maximum_hourly_diagnostics</scheme>
       <scheme>phys_tend</scheme>
-      <scheme>GFS_cosp</scheme>
+      <scheme>cosp_simulator</scheme>
     </subcycle>
   </group>
 </suite>

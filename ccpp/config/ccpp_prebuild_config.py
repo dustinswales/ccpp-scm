@@ -240,7 +240,7 @@ SCHEME_FILES = [
     'ccpp/physics/physics/GFS_rrtmgp_cloud_overlap.F90'     ,
     'ccpp/physics/physics/GFS_rrtmgp_sw_post.F90'           ,
     # COSP
-    'ccpp/physics/physics/GFS_cosp.F90'
+    'ccpp/physics/physics/cosp_simulator.F90'
     ]
 
 # Default build dir, relative to current working directory,
