@@ -3490,6 +3490,140 @@
   units = flag
   dimensions =  ()
   type = logical
+[do_cosp]
+  standard_name = flag_for_cosp_diagnostics 
+  long_name = flag for cosp diagnostics
+  units = flag
+  dimensions =  ()
+  type = logical
+[do_cosp_isccp]
+  standard_name = flag_for_cosp_isccp_diagnostics
+  long_name = flag for cosp ISCCP diagnostics
+  units = flag
+  dimensions =  ()
+  type = logical
+[do_cosp_misr]
+  standard_name = flag_for_cosp_misr_diagnostics
+  long_name = flag for cosp MISR diagnostics
+  units = flag
+  dimensions =  ()
+  type = logical
+[do_cosp_modis]
+  standard_name = flag_for_cosp_modis_diagnostics
+  long_name = flag for cosp MODIS diagnostics
+  units = flag
+  dimensions =  ()
+  type = logical
+[do_cosp_cloudsat]
+  standard_name = flag_for_cosp_Cloudsat_diagnostics
+  long_name = flag for cosp Cloudsat RADAR diagnostics
+  units = flag
+  dimensions =  ()
+  type = logical
+[do_cosp_calipso]
+  standard_name = flag_for_cosp_Calipso_diagnostics
+  long_name = flag for cosp Calipso LIDAR diagnostics
+  units = flag
+  dimensions =  ()
+  type = logical
+[do_cosp_grLidar532]
+  standard_name = flag_for_cosp_grLidar532_diagnostics
+  long_name = flag for cosp ground-based LIDAR (532nm) diagnostics
+  units = flag
+  dimensions =  ()
+  type = logical
+[do_cosp_atlid]
+  standard_name = flag_for_cosp_atlid_diagnostics
+  long_name = flag for cosp EarthCare LIDAR diagnostics
+  units = flag
+  dimensions =  ()
+  type = logical
+[do_cosp_parasol]
+  standard_name = flag_for_cosp_parasol_diagnostics
+  long_name = flag for cosp parasol diagnostics
+  units = flag
+  dimensions =  ()
+  type = logical
+[cosp_nsubcol]
+  standard_name = number_of_cosp_subcolumns
+  long_name = number of cosp subcolumns
+  units = count
+  dimensions =  ()
+  type = integer
+[cosp_nlvgrid]
+  standard_name = number_of_cosp_vertical_levels_for_statistical_grid
+  long_name = number of cosp vertical levels for statistical grid
+  units = count
+  dimensions =  ()
+  type = integer
+[use_vgrid]
+  standard_name = flag_for_cosp_vertical_statistical_grid
+  long_name = flag for cosp vertical statistical grid
+  units = flag
+  dimensions =  ()
+  type = logical
+[csat_vgrid]
+  standard_name = flag_for_cosp_Cloudsat_vertical_grid
+  long_name = flag for cosp Cloudsat vertical grid
+  units = flag
+  dimensions =  ()
+  type = logical
+[csat_freq]
+  standard_name = frequency_for_cosp_cloudsat_radar_simulator
+  long_name = frequency for cosp cloudsat radar simulator
+  units = Ghz
+  dimensions = ()
+  type = real
+  kind = kind_phys
+[csat_gas_abs]
+  standard_name = flag_to_include_gaseous_absorption_in_cosp_cloudsat_radar_simulator
+  long_name = flag to include gaseous absorption in cosp cloudsat radar simulator
+  units	    = 1
+  dimensions = ()
+  type = integer
+[csat_do_ray]
+  standard_name = flag_to_include_rayleigh_scattering_in_cosp_cloudsat_radar_simulator
+  long_name = flag to include Rayleigh scattering in cosp cloudsat radar simulator
+  units     = 1
+  dimensions = ()
+  type = integer
+[csat_k2]
+  standard_name = flag_for_frequency_dependent_cosp_cloudsat_radar_simulator
+  long_name = flag for frequency dependent cosp cloudsat radar simulator
+  units	    = 1 
+  dimensions = ()
+  type = real
+  kind = kind_phys
+[Nprmts_max_hydro]
+  standard_name = number_of_parameters_in_hydrometeor_size_distribution 
+  long_name = number of parameters in hydrometeor size distribution
+  units     = 1
+  dimensions = ()
+  type = integer
+[lidar_ice_type]
+  standard_name = assumed_shape_in_cosp_calipso_lidar_simulator
+  long_name = ice particle shape in lidar calculations
+  units     = 1
+  dimensions = ()
+  type = integer
+[overlap]
+  standard_name = cloud_overlap_in_cosp
+  long_name = cloud overlap assumption used in cosp
+  units     = 1
+  dimensions = ()
+  type = integer
+[isccp_topht]
+  standard_name = cloud_top_height_adjustment_in_cosp_isccp_simulator
+  long_name = cloud top height adjustment in cosp isccp simulator
+  units     = 1
+  dimensions = ()
+  type = integer
+[isccp_topht_dir]
+  standard_name = cloud_top_height_direction_in_cosp_isccp_simulator
+  long_name = cloud top height direction in cosp isccp simulator
+  units     = 1
+  dimensions = ()
+  type = integer
 [do_GPsw_Glw]
   standard_name = flag_for_rrtmgp_shortwave_and_rrtmg_longwave_radiation
   long_name = When true GP is used for SW calculation and G is used for LW calculation

@@ -6,7 +6,6 @@ module GFS_typedefs
    use module_radlw_parameters,  only: topflw_type, sfcflw_type
    use ozne_def,                 only: levozp, oz_coeff
    use h2o_def,                  only: levh2o, h2o_coeff
-   use mod_cosp,                 only: cosp_outputs
    use mod_cosp_config,          only: numISCCPTauBins, numISCCPPresBins
 
    implicit none
@@ -795,6 +794,30 @@ module GFS_typedefs
     integer              :: iSFC                    !< Vertical index for surface
     integer              :: iTOA                    !< Vertical index for TOA
 
+
+    ! COSP
+    logical              :: do_cosp
+    logical              :: do_cosp_isccp
+    logical              :: do_cosp_modis           !< If true, create COSP MODIS simulator diagnostics
+    logical              :: do_cosp_misr            !< If true, create COSP MISR simulator diagnostics
+    logical              :: do_cosp_cloudsat        !< If true, create COSP Cloudsat RADAR simulator diagnostics
+    logical              :: do_cosp_calipso         !< If true, create COSP Calipso LIDAR simulator diagnostics
+    logical              :: do_cosp_grLidar532      !< If true, create COSP Ground-based 532nm Lidar simulator diagnostics
+    logical              :: do_cosp_atlid           !< If true, create COSP EarthCase Lidar simulator diagnostics
+    logical              :: do_cosp_parasol         !< If true, create COSP PARASOL simulator diagnostics
+    integer              :: cosp_nsubcol            !< Number of subcolumns in SCOPS, COSP internal subcolumn generator
+    integer              :: cosp_nlvgrid            !< Number of levels in COSP cloudsat/calipso statistical outputs
+    logical              :: use_vgrid               !< Use fixed vertical grid, cosp_nlvgrid, for outputs? 
+    logical              :: csat_vgrid              !< CloudSat vertical grid? (if .true. then the CloudSat native grid is used.)
+    real(kind_phys)      :: csat_freq               !< CloudSat radar frequency (GHz)
+    integer              :: csat_gas_abs            !< Cloudsat: Include gaseous absorption? yes=1,no=0
+    integer              :: csat_do_ray             !< Cloudsat: Calculate/output Rayleigh refl=1, not=0
+    real(kind_phys)      :: csat_k2                 !< Cloudsat |K|^2, -1=use frequency dependent default
+    integer              :: Nprmts_max_hydro        !< Max # params for hydrometeor size distributions
+    integer              :: lidar_ice_type          !< Ice particle shape in lidar calculations (0=ice-spheres ; 1=ice-non-spherical)
+    integer              :: overlap                 !< Cloud ooverlap type: 1=max, 2=rand, 3=max/rand
+    integer              :: isccp_topht
+    integer              :: isccp_topht_dir
 !--- microphysical switch
     logical              :: convert_dry_rho = .true.       !< flag for converting mass/number concentrations from moist to dry
                                                            !< for physics options that expect dry mass/number concentrations;
@@ -1937,7 +1960,15 @@ module GFS_typedefs
     real (kind=kind_phys), pointer :: aux3d(:,:,:)=> null()    !< auxiliary 2d arrays in output (for debugging)
 
     ! COSP
-    type (cosp_outputs) :: cosp_diag
+    real (kind=kind_phys), pointer :: f1isccp_cosp(:,:,:) => null()
+    real (kind=kind_phys), pointer :: cldtot_isccp(:)     => null()
+    real (kind=kind_phys), pointer :: meancldalb_isccp(:) => null()
+    real (kind=kind_phys), pointer :: meanptop_isccp(:)   => null()
+    real (kind=kind_phys), pointer :: meantau_isccp(:)    => null()
+    real (kind=kind_phys), pointer :: meantb_isccp(:)     => null()
+    real (kind=kind_phys), pointer :: meantbclr_isccp(:)  => null()
+    real (kind=kind_phys), pointer :: tau_isccp(:,:)      => null()
+    real (kind=kind_phys), pointer :: cldptop_isccp(:,:)  => null()
 
     contains
       procedure :: create    => diag_create
@@ -3020,6 +3051,50 @@ module GFS_typedefs
     logical              :: doGP_sgs_mynn       = .false.    !< If true, include SubGridScale MYNN-EDMF cloud in RRTMGP
     logical              :: doGP_smearclds      = .true.     !< If true, include implicit SubGridScale clouds in RRTMGP 
 
+    ! COSP
+    logical              :: do_cosp = .false.
+    logical              :: do_cosp_isccp = .false.
+    logical              :: do_cosp_modis = .false.      !< If true, create COSP MODIS simulator diagnostics
+    logical              :: do_cosp_misr = .false.       !< If true, create COSP MISR simulator diagnostics
+    logical              :: do_cosp_cloudsat = .false.   !< If true, create COSP Cloudsat RADAR simulator diagnostics
+    logical              :: do_cosp_calipso = .false.    !< If true, create COSP Calipso LIDAR simulator diagnostics
+    logical              :: do_cosp_grLidar532 = .false. !< If true, create COSP Ground-based 532nm Lidar simulator diagnostics
+    logical              :: do_cosp_atlid = .false.      !< If true, create COSP EarthCase Lidar simulator diagnostics
+    logical              :: do_cosp_parasol = .false.    !< If true, create COSP PARASOL simulator diagnostics
+    integer              :: cosp_nsubcol = 50       !< Number of subcolumns in SCOPS, COSP internal subcolumn generator
+    integer              :: cosp_nlvgrid = 40       !< Number of levels in COSP cloudsat/calipso statistical outputs
+    logical              :: use_vgrid = .true.      !< Use fixed vertical grid, cosp_nlvgrid, for outputs?
+    logical              :: csat_vgrid = .true.     !< CloudSat vertical grid? (if .true. then the CloudSat native grid is used.)
+    real(kind_phys)      :: csat_freq = 94.0        !< CloudSat radar frequency (GHz)
+    integer              :: csat_gas_abs = 1        !< Cloudsat: Include gaseous absorption? yes=1,no=0
+    integer              :: csat_do_ray = 0         !< Cloudsat: Calculate/output Rayleigh refl=1, not=0
+    real(kind_phys)      :: csat_k2 = -1            !< Cloudsat |K|^2, -1=use frequency dependent default
+    integer              :: Nprmts_max_hydro = 12   !< Max # params for hydrometeor size distributions
+    integer              :: lidar_ice_type = 0      !< Ice particle shape in lidar calculations (0=ice-spheres ; 1=ice-non-spherical)
+    integer              :: overlap = 3             !< Cloud ooverlap type: 1=max, 2=rand, 3=max/rand
+    integer              :: isccp_topht =  1        !< 1 = adjust top height using both a computed infrared
+                                                    !<     brightness temperature and the visible optical depth to adjust 
+                                                    !<     cloud top pressure. Note that this calculation is most 
+                                                    !<     appropriate to compare  to ISCCP data during sunlit hours.
+                                                    !< 2 = do not adjust top height, that is cloud top pressure
+                                                    !<     is the actual cloud top pressure in the model
+                                                    !< 3 = adjust top height using only the computed infrared
+                                                    !<     brightness temperature. Note that this calculation is most
+                                                    !<     appropriate to compare to ISCCP IR only algortihm (i.e.
+                                                    !<     you can compare to nighttime ISCCP data with this option)
+    integer              :: isccp_topht_dir = 2     !< Direction for finding atmosphere pressure level with
+                                                    !< interpolated temperature equal to the radiance determined 
+                                                    !< cloud-top temperature
+                                                    !< 1 = find the *lowest* altitude (highest pressure) level
+                                                    !<     with interpolated temperature equal to the radiance
+                                                    !<     determined cloud-top temperature
+                                                    !< 2 = find the *highest* altitude (lowest pressure) level
+                                                    !<     with interpolated temperature equal to the radiance 
+                                                    !<     determined cloud-top temperature
+                                                    !< ONLY APPLICABLE IF top_height EQUALS 1 or 3
+                                                    !< 1 = default setting in COSP v1.1, matches all versions of
+                                                    !< ISCCP simulator with versions numbers 3.5.1 and lower
+                                                    !< 2 = default setting in COSP v1.3. default since V4.0 of ISCCP simulator
 !--- Z-C microphysical parameters
     integer              :: imp_physics       =  99                !< choice of cloud scheme
     real(kind=kind_phys) :: psautco(2)        = (/6.0d-4,3.0d-4/)  !< [in] auto conversion coeff from ice to snow
@@ -3482,6 +3557,13 @@ module GFS_typedefs
                                rrtmgp_nrghice, rrtmgp_nGauss_ang, do_GPsw_Glw,              &
                                use_LW_jacobian, doGP_lwscat, damp_LW_fluxadj, lfnc_k,       &
                                lfnc_p0, iovr_convcld, doGP_sgs_cnv, doGP_sgs_mynn,          &
+                          ! --- COSP
+                               do_cosp_isccp, do_cosp_misr, do_cosp_modis, do_cosp_cloudsat,&
+                               do_cosp_calipso, do_cosp_grLidar532, do_cosp_atlid,          &
+                               do_cosp_parasol, cosp_nsubcol, cosp_nlvgrid, use_vgrid,      &
+                               csat_vgrid, csat_freq, csat_gas_abs, csat_do_ray, csat_k2,   &
+                               Nprmts_max_hydro, lidar_ice_type, overlap, isccp_topht,      &
+                               isccp_topht_dir,                                             &
                           ! IN CCN forcing
                                iccn, mraerosol,                                             &
                           !--- microphysical parameterizations
@@ -3996,6 +4078,35 @@ module GFS_typedefs
              " of the lw/sw heating rates to be turned on (namelist options lwhtr and swhtr)"
       stop
     end if
+
+    ! COSP
+    if (do_cosp_isccp   .or. do_cosp_misr       .or. do_cosp_modis .or. do_cosp_cloudsat .or. &
+        do_cosp_calipso .or. do_cosp_grLidar532 .or. do_cosp_atlid .or. do_cosp_parasol) then
+       Model%do_cosp = .true.
+    else
+       Model%do_cosp = .false.
+    endif
+    Model%do_cosp_isccp      = do_cosp_isccp
+    Model%do_cosp_misr       = do_cosp_misr
+    Model%do_cosp_modis      = do_cosp_modis
+    Model%do_cosp_cloudsat   = do_cosp_cloudsat
+    Model%do_cosp_calipso    = do_cosp_calipso
+    Model%do_cosp_grLidar532 = do_cosp_grLidar532
+    Model%do_cosp_atlid      = do_cosp_atlid
+    Model%do_cosp_parasol    = do_cosp_parasol
+    Model%cosp_nsubcol       = cosp_nsubcol
+    Model%cosp_nlvgrid       = cosp_nlvgrid
+    Model%use_vgrid          = use_vgrid
+    Model%csat_vgrid         = csat_vgrid
+    Model%csat_freq          = csat_freq
+    Model%csat_gas_abs       = csat_gas_abs
+    Model%csat_do_ray        = csat_do_ray
+    Model%csat_k2            = csat_k2
+    Model%Nprmts_max_hydro   = Nprmts_max_hydro
+    Model%lidar_ice_type     = lidar_ice_type
+    Model%overlap            = overlap
+    Model%isccp_topht        = isccp_topht
+    Model%isccp_topht_dir  =   isccp_topht_dir
 
 !--- microphysical switch
     Model%imp_physics      = imp_physics
@@ -7074,6 +7185,20 @@ module GFS_typedefs
     if (Model%naux3d>0) then
       allocate (Diag%aux3d(IM,Model%levs,Model%naux3d))
       Diag%aux3d = clear_val
+    endif
+
+    if (Model%do_cosp) then
+       if (Model%do_cosp_isccp) then
+          allocate(Diag%f1isccp_cosp(IM,numISCCPTauBins, numISCCPPresBins), &
+                   Diag%cldtot_isccp(IM),     &
+                   Diag%meancldalb_isccp(IM), &
+                   Diag%meanptop_isccp(IM),   &
+                   Diag%meantau_isccp(IM),    &
+                   Diag%meantb_isccp(IM),     &
+                   Diag%meantbclr_isccp(IM),  &
+                   Diag%tau_isccp(IM,Model%cosp_nsubcol),      &
+                   Diag%cldptop_isccp(IM,Model%cosp_nsubcol))
+       endif
     endif
 
     call Diag%rad_zero  (Model)
