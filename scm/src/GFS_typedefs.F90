@@ -796,8 +796,8 @@ module GFS_typedefs
 
 
     ! COSP
-    logical              :: do_cosp
-    logical              :: do_cosp_isccp
+    logical              :: do_cosp                 !< If true, use COSP
+    logical              :: do_cosp_isccp           !< If true, create COSP ISCCP simulator diagnostics
     logical              :: do_cosp_modis           !< If true, create COSP MODIS simulator diagnostics
     logical              :: do_cosp_misr            !< If true, create COSP MISR simulator diagnostics
     logical              :: do_cosp_cloudsat        !< If true, create COSP Cloudsat RADAR simulator diagnostics
@@ -3052,49 +3052,49 @@ module GFS_typedefs
     logical              :: doGP_smearclds      = .true.     !< If true, include implicit SubGridScale clouds in RRTMGP 
 
     ! COSP
-    logical              :: do_cosp = .false.
-    logical              :: do_cosp_isccp = .false.
-    logical              :: do_cosp_modis = .false.      !< If true, create COSP MODIS simulator diagnostics
-    logical              :: do_cosp_misr = .false.       !< If true, create COSP MISR simulator diagnostics
-    logical              :: do_cosp_cloudsat = .false.   !< If true, create COSP Cloudsat RADAR simulator diagnostics
-    logical              :: do_cosp_calipso = .false.    !< If true, create COSP Calipso LIDAR simulator diagnostics
+    logical              :: do_cosp            = .false. !< If true, use COSP
+    logical              :: do_cosp_isccp      = .false. !< If true, create COSP ISCCP simulator diagnostics
+    logical              :: do_cosp_modis      = .false. !< If true, create COSP MODIS simulator diagnostics
+    logical              :: do_cosp_misr       = .false. !< If true, create COSP MISR simulator diagnostics
+    logical              :: do_cosp_cloudsat   = .false. !< If true, create COSP Cloudsat RADAR simulator diagnostics
+    logical              :: do_cosp_calipso    = .false. !< If true, create COSP Calipso LIDAR simulator diagnostics
     logical              :: do_cosp_grLidar532 = .false. !< If true, create COSP Ground-based 532nm Lidar simulator diagnostics
-    logical              :: do_cosp_atlid = .false.      !< If true, create COSP EarthCase Lidar simulator diagnostics
-    logical              :: do_cosp_parasol = .false.    !< If true, create COSP PARASOL simulator diagnostics
-    integer              :: cosp_nsubcol = 50       !< Number of subcolumns in SCOPS, COSP internal subcolumn generator
-    integer              :: cosp_nlvgrid = 40       !< Number of levels in COSP cloudsat/calipso statistical outputs
-    logical              :: use_vgrid = .true.      !< Use fixed vertical grid, cosp_nlvgrid, for outputs?
-    logical              :: csat_vgrid = .true.     !< CloudSat vertical grid? (if .true. then the CloudSat native grid is used.)
-    real(kind_phys)      :: csat_freq = 94.0        !< CloudSat radar frequency (GHz)
-    integer              :: csat_gas_abs = 1        !< Cloudsat: Include gaseous absorption? yes=1,no=0
-    integer              :: csat_do_ray = 0         !< Cloudsat: Calculate/output Rayleigh refl=1, not=0
-    real(kind_phys)      :: csat_k2 = -1            !< Cloudsat |K|^2, -1=use frequency dependent default
-    integer              :: Nprmts_max_hydro = 12   !< Max # params for hydrometeor size distributions
-    integer              :: lidar_ice_type = 0      !< Ice particle shape in lidar calculations (0=ice-spheres ; 1=ice-non-spherical)
-    integer              :: overlap = 3             !< Cloud ooverlap type: 1=max, 2=rand, 3=max/rand
-    integer              :: isccp_topht =  1        !< 1 = adjust top height using both a computed infrared
-                                                    !<     brightness temperature and the visible optical depth to adjust 
-                                                    !<     cloud top pressure. Note that this calculation is most 
-                                                    !<     appropriate to compare  to ISCCP data during sunlit hours.
-                                                    !< 2 = do not adjust top height, that is cloud top pressure
-                                                    !<     is the actual cloud top pressure in the model
-                                                    !< 3 = adjust top height using only the computed infrared
-                                                    !<     brightness temperature. Note that this calculation is most
-                                                    !<     appropriate to compare to ISCCP IR only algortihm (i.e.
-                                                    !<     you can compare to nighttime ISCCP data with this option)
-    integer              :: isccp_topht_dir = 2     !< Direction for finding atmosphere pressure level with
-                                                    !< interpolated temperature equal to the radiance determined 
-                                                    !< cloud-top temperature
-                                                    !< 1 = find the *lowest* altitude (highest pressure) level
-                                                    !<     with interpolated temperature equal to the radiance
-                                                    !<     determined cloud-top temperature
-                                                    !< 2 = find the *highest* altitude (lowest pressure) level
-                                                    !<     with interpolated temperature equal to the radiance 
-                                                    !<     determined cloud-top temperature
-                                                    !< ONLY APPLICABLE IF top_height EQUALS 1 or 3
-                                                    !< 1 = default setting in COSP v1.1, matches all versions of
-                                                    !< ISCCP simulator with versions numbers 3.5.1 and lower
-                                                    !< 2 = default setting in COSP v1.3. default since V4.0 of ISCCP simulator
+    logical              :: do_cosp_atlid      = .false. !< If true, create COSP EarthCase Lidar simulator diagnostics
+    logical              :: do_cosp_parasol    = .false. !< If true, create COSP PARASOL simulator diagnostics
+    integer              :: cosp_nsubcol       = 50      !< Number of subcolumns in SCOPS, COSP internal subcolumn generator
+    integer              :: cosp_nlvgrid       = 40      !< Number of levels in COSP cloudsat/calipso statistical outputs
+    logical              :: use_vgrid          = .true.  !< Use fixed vertical grid, cosp_nlvgrid, for outputs?
+    logical              :: csat_vgrid         = .true.  !< CloudSat vertical grid? (if .true. then the CloudSat native grid is used.)
+    real(kind_phys)      :: csat_freq          = 94.0    !< CloudSat radar frequency (GHz)
+    integer              :: csat_gas_abs       = 1       !< Cloudsat: Include gaseous absorption? yes=1,no=0
+    integer              :: csat_do_ray        = 0       !< Cloudsat: Calculate/output Rayleigh refl=1, not=0
+    real(kind_phys)      :: csat_k2            = -1      !< Cloudsat |K|^2, -1=use frequency dependent default
+    integer              :: Nprmts_max_hydro   = 12      !< Max # params for hydrometeor size distributions
+    integer              :: lidar_ice_type     = 0       !< Ice particle shape in lidar calculations (0=ice-spheres ; 1=ice-non-spherical)
+    integer              :: overlap            = 3       !< Cloud ooverlap type: 1=max, 2=rand, 3=max/rand
+    integer              :: isccp_topht        = 1       !< 1 = adjust top height using both a computed infrared
+                                                         !<     brightness temperature and the visible optical depth to adjust 
+                                                         !<     cloud top pressure. Note that this calculation is most 
+                                                         !<     appropriate to compare  to ISCCP data during sunlit hours.
+                                                         !< 2 = do not adjust top height, that is cloud top pressure
+                                                         !<     is the actual cloud top pressure in the model
+                                                         !< 3 = adjust top height using only the computed infrared
+                                                         !<     brightness temperature. Note that this calculation is most
+                                                         !<     appropriate to compare to ISCCP IR only algortihm (i.e.
+                                                         !<     you can compare to nighttime ISCCP data with this option)
+    integer              :: isccp_topht_dir    = 2       !< Direction for finding atmosphere pressure level with
+                                                         !< interpolated temperature equal to the radiance determined 
+                                                         !< cloud-top temperature
+                                                         !< 1 = find the *lowest* altitude (highest pressure) level
+                                                         !<     with interpolated temperature equal to the radiance
+                                                         !<     determined cloud-top temperature
+                                                         !< 2 = find the *highest* altitude (lowest pressure) level
+                                                         !<     with interpolated temperature equal to the radiance 
+                                                         !<     determined cloud-top temperature
+                                                         !< ONLY APPLICABLE IF top_height EQUALS 1 or 3
+                                                         !< 1 = default setting in COSP v1.1, matches all versions of
+                                                         !< ISCCP simulator with versions numbers 3.5.1 and lower
+                                                         !< 2 = default setting in COSP v1.3. default since V4.0 of ISCCP simulator
 !--- Z-C microphysical parameters
     integer              :: imp_physics       =  99                !< choice of cloud scheme
     real(kind=kind_phys) :: psautco(2)        = (/6.0d-4,3.0d-4/)  !< [in] auto conversion coeff from ice to snow
@@ -7190,13 +7190,13 @@ module GFS_typedefs
     if (Model%do_cosp) then
        if (Model%do_cosp_isccp) then
           allocate(Diag%f1isccp_cosp(IM,numISCCPTauBins, numISCCPPresBins), &
-                   Diag%cldtot_isccp(IM),     &
-                   Diag%meancldalb_isccp(IM), &
-                   Diag%meanptop_isccp(IM),   &
-                   Diag%meantau_isccp(IM),    &
-                   Diag%meantb_isccp(IM),     &
-                   Diag%meantbclr_isccp(IM),  &
-                   Diag%tau_isccp(IM,Model%cosp_nsubcol),      &
+                   Diag%cldtot_isccp(IM),                                   &
+                   Diag%meancldalb_isccp(IM),                               &
+                   Diag%meanptop_isccp(IM),                                 &
+                   Diag%meantau_isccp(IM),                                  &
+                   Diag%meantb_isccp(IM),                                   &
+                   Diag%meantbclr_isccp(IM),                                &
+                   Diag%tau_isccp(IM,Model%cosp_nsubcol),                   &
                    Diag%cldptop_isccp(IM,Model%cosp_nsubcol))
        endif
     endif
@@ -7466,6 +7466,21 @@ module GFS_typedefs
       Diag%totice  = zero
       Diag%totsnw  = zero
       Diag%totgrp  = zero
+    endif
+
+! COSP
+    if (Model%do_cosp) then
+       if (Model%do_cosp_isccp) then
+          Diag%f1isccp_cosp     = zero
+          Diag%cldtot_isccp     = zero
+          Diag%meancldalb_isccp = zero
+          Diag%meanptop_isccp   = zero
+          Diag%meantau_isccp    = zero
+          Diag%meantb_isccp     = zero
+          Diag%meantbclr_isccp  = zero
+          Diag%tau_isccp        = zero
+          Diag%cldptop_isccp    = zero
+       endif
     endif
 
   end subroutine diag_phys_zero

@@ -8842,6 +8842,69 @@
   dimensions = (horizontal_loop_extent)
   type = real
   kind = kind_phys
+[f1isccp_cosp]
+  standard_name = isccp_cloud_frequency_by_height_diagram
+  long_name = ISCCP cloud frequency by height diagram
+  units = 1
+  dimensions = (horizontal_loop_extent,7,7)
+  type = real
+  kind = kind_phys
+[cldtot_isccp]
+  standard_name = isccp_mean_cloud_fraction
+  long_name = ISCCP mean cloud fraction
+  units = 1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+[meancldalb_isccp]
+  standard_name = isccp_mean_cloud_albedo
+  long_name = ISCCP mean cloud albedo
+  units = 1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+[meanptop_isccp]
+  standard_name = isccp_mean_cloud_top_pressure
+  long_name = ISCCP mean cloud top pressure
+  units = Pa
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+[meantau_isccp]
+  standard_name = isccp_mean_cloud_optical_depth
+  long_name = ISCCP mean cloud optical depth
+  units = 1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+[meantb_isccp]
+  standard_name = isccp_mean_cloud_brightness_temperature
+  long_name = ISCCP mean cloud brightness temperature
+  units = K
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+[meantbclr_isccp]
+  standard_name = isccp_mean_cloud_brightness_temperature_for_clear_sky_conditions
+  long_name = ISCCP mean cloud brightness temperature for clear sky conditions
+  units = K
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+[tau_isccp]
+  standard_name = isccp_cloud_optical_depth
+  long_name = ISCCP cloud optical depth
+  units = 1
+  dimensions = (horizontal_loop_extent,number_of_cosp_subcolumns)
+  type = real
+  kind = kind_phys
+[cldptop_isccp]
+  standard_name = isccp_cloud_top_pressure
+  long_name = ISCCP cloud top pressure
+  units = Pa
+  dimensions = (horizontal_loop_extent,number_of_cosp_subcolumns)
+  type = real
+  kind = kind_phys
 
 ########################################################################
 [ccpp-table-properties]
