@@ -4,7 +4,6 @@ module GFS_typedefs
      
    use module_radsw_parameters,  only: topfsw_type, sfcfsw_type
    use module_radlw_parameters,  only: topflw_type, sfcflw_type
-   use ozne_def,                 only: levozp, oz_coeff
    use h2o_def,                  only: levh2o, h2o_coeff
 
    implicit none
@@ -616,6 +615,8 @@ module GFS_typedefs
     integer              :: communicator    !< MPI communicator
     integer              :: ntasks          !< MPI size in communicator
     integer              :: nthreads        !< OpenMP threads available for physics
+    integer              :: ccpp_inst       !< my CCPP-physics instance
+    integer              :: ccpp_inst_main  !< main CCPP-physics instance 
     integer              :: nlunit          !< unit for namelist
     character(len=64)    :: fn_nml          !< namelist filename for surface data cycling
     character(len=:), pointer, dimension(:) :: input_nml_file => null() !< character string containing full namelist
@@ -780,6 +781,16 @@ module GFS_typedefs
     logical              :: lrseeds         !< flag to use host-provided random seeds
     integer              :: nrstreams       !< number of random number streams in host-provided random seed array
     logical              :: lextop          !< flag for using an extra top layer for radiation
+    integer              :: month0          !< month for climatological radiation (aerosol) data
+    integer              :: monthd          !< month for climatological radiation (co2) data  
+    integer              :: iyear0          !< year for climatological radiation data
+    logical              :: loz1st          !< control flag for the first time of reading climatological ozone data
+    integer              :: itsfc           !< control flag for LW surface temperature at air/ground interface
+    real(kind_phys)      :: qmin            !< lower limit of saturation vapor pressure
+    real(kind_phys)      :: qme5            !< lower limit of specific humidity 1
+    real(kind_phys)      :: qme6            !< lower limit of specific humidity 2
+    real(kind_phys)      :: epsq            !< lower limit of change in specific humidity
+    real(kind_phys)      :: prsmin          !< lower limit of toa pressure value
 
     ! RRTMGP
     logical              :: do_RRTMGP               !< Use RRTMGP
@@ -919,6 +930,7 @@ module GFS_typedefs
     real(kind=kind_phys) :: dt_inner        !< time step for the inner loop in s
     logical              :: sedi_semi       !< flag for semi Lagrangian sedi of rain
     integer              :: decfl           !< deformed CFL factor
+    logical              :: is_thompson_initialized !< Has Thompson MP scheme initialized?
 
     !--- GFDL microphysical paramters
     logical              :: lgfdlmprad      !< flag for GFDL mp scheme and radiation consistency
@@ -984,6 +996,23 @@ module GFS_typedefs
 
 !--- flake model parameters
     integer              :: lkm             !< flag for flake model
+
+! --- ozone physics
+    integer                        :: kozpl = 28
+    integer                        :: kozc  = 48
+    integer                        :: latsozp
+    integer                        :: levozp
+    integer                        :: timeoz
+    integer                        :: latsozc
+    integer                        :: levozc
+    integer                        :: timeozc
+    integer                        :: oz_coeff
+    real (kind=kind_phys)          :: blatc
+    real (kind=kind_phys)          :: dphiozc
+    real (kind=kind_phys), pointer :: oz_lat(:)
+    real (kind=kind_phys), pointer :: oz_pres(:)
+    real (kind=kind_phys), pointer :: oz_time(:)
+    real (kind=kind_phys), pointer :: ozplin(:,:,:,:)
 
 !--- tuning parameters for physical parameterizations
     logical              :: ras             !< flag for ras convection scheme
@@ -3048,6 +3077,16 @@ module GFS_typedefs
     logical              :: lrseeds           = .false.      !< flag to use host-provided random seeds
     integer              :: nrstreams         = 2            !< number of random number streams in host-provided random seed array
     logical              :: lextop            = .false.      !< flag for using an extra top layer for radiation
+    integer              :: month0            = 0            !< month for climatological radiation (aerosol) data
+    integer              :: monthd            = 0            !< month for climatological radiation (co2) data
+    integer              :: iyear0            = 0            !< year for climatological radiation data
+    logical              :: loz1st            = .false.      !< control flag for the first time of reading climatological ozone data
+    integer              :: itsfc             = 0            !< control flag for LW surface temperature at air/ground interface
+    real(kind_phys)      :: qmin              = 1.0e-10      !< lower limit of saturation vapor pressure
+    real(kind_phys)      :: qme5              = 1.0e-7       !< lower limit of specific humidity 1
+    real(kind_phys)      :: qme6              = 1.0e-7       !< lower limit of specific humidity 2
+    real(kind_phys)      :: epsq              = 1.0e-12      !< lower limit of change in specific humidity
+    real(kind_phys)      :: prsmin            = 1.0e-6       !< lower limit of toa pressure value
     ! RRTMGP
     logical              :: do_RRTMGP           = .false.    !< Use RRTMGP?
     character(len=128)   :: active_gases        = ''         !< Character list of active gases used in RRTMGP
@@ -3144,6 +3183,7 @@ module GFS_typedefs
     real(kind=kind_phys) :: dt_inner       = -999.0             !< time step for the inner loop 
     logical              :: sedi_semi      = .false.            !< flag for semi Lagrangian sedi of rain
     integer              :: decfl          = 8                  !< deformed CFL factor
+    logical              :: is_thompson_initialized = .false.   !< Has Thompson MP scheme initialized? 
 
     !--- GFDL microphysical parameters
     logical              :: lgfdlmprad     = .false.            !< flag for GFDLMP radiation interaction
@@ -3661,6 +3701,7 @@ module GFS_typedefs
     logical :: have_pbl, have_dcnv, have_scnv, have_mp, have_oz_phys, have_samf, have_pbl_edmf, have_cnvtrans, have_rdamp
     character(len=20) :: namestr
     character(len=44) :: descstr
+    real(kind=kind_phys) :: blatc4
 
     ! dtend selection: default is to match all variables:
     dtend_select(1)='*'
@@ -3709,6 +3750,7 @@ module GFS_typedefs
     Model%fhzero           = fhzero
     Model%ldiag3d          = ldiag3d
     Model%qdiag3d          = qdiag3d
+    Model%ccpp_inst_main   = 1
     if (qdiag3d .and. .not. ldiag3d) then
       write(0,*) 'Logic error in GFS_typedefs.F90: qdiag3d requires ldiag3d'
       stop
@@ -4988,17 +5030,52 @@ module GFS_typedefs
 
     ENDIF !}
 
+    !--- ozone physics
+    if (Model%ntoz <= 0) then
+       rewind (Model%kozc)
+       read (Model%kozc,end=101) Model%latsozc, Model%levozc, Model%timeozc, blatc4
+101    if (Model%levozc  < 10 .or. Model%levozc > 100) then
+          rewind (Model%kozc)
+          Model%levozc  = 17
+          Model%latsozc = 18
+          Model%blatc   = -85.0
+       else
+          Model%blatc   = blatc4
+       endif
+       Model%latsozp   = 2
+       Model%levozp    = 1
+       Model%timeoz    = 1
+       Model%oz_coeff  = 0
+       Model%dphiozc = -(Model%blatc+Model%blatc)/(Model%latsozc-1)
+    else
+       open(unit=Model%kozpl,file='global_o3prdlos.f77', form='unformatted', convert='big_endian')
+       read (Model%kozpl) Model%oz_coeff, Model%latsozp, Model%levozp, Model%timeoz
+       if (Model%me == Model%master) then
+          write(*,*) 'Reading in o3data from global_o3prdlos.f77 '
+          write(*,*) '      oz_coeff = ', Model%oz_coeff
+          write(*,*) '       latsozp = ', Model%latsozp
+          write(*,*) '        levozp = ', Model%levozp
+          write(*,*) '        timeoz = ', Model%timeoz
+       endif
+       allocate (Model%oz_lat(Model%latsozp))
+       allocate (Model%oz_pres(Model%levozp))
+       allocate (Model%oz_time(Model%timeoz+1))
+       allocate (Model%ozplin(Model%latsozp,Model%levozp,Model%oz_coeff,Model%timeoz))
+       close(Model%kozpl)
+       print*,'IN GFS_typedeffs:', Model%oz_coeff, Model%latsozp, Model%levozp, Model%timeoz
+    endif
+
     ! To ensure that these values match what's in the physics,
     ! array sizes are compared during model init in GFS_phys_time_vary_init()
     !
     ! from module ozinterp
     if (Model%ntoz>0) then
        if (Model%oz_phys) then
-          levozp   = 80
-          oz_coeff = 4
+          Model%levozp   = 80
+          Model%oz_coeff = 4
        else if (Model%oz_phys_2015) then
-          levozp   = 53
-          oz_coeff = 6
+          Model%levozp   = 53
+          Model%oz_coeff = 6
        else
           write(*,*) 'Logic error, ntoz>0 but no ozone physics selected'
           stop
@@ -5008,8 +5085,8 @@ module GFS_typedefs
           write(*,*) 'Logic error, ozone physics are selected, but ntoz<=0'
           stop
        else
-          levozp   = 1
-          oz_coeff = 1
+          Model%levozp   = 1
+          Model%oz_coeff = 1
        end if
     end if
 
@@ -6445,7 +6522,7 @@ module GFS_typedefs
     endif
 
 !--- ozone and stratosphere h2o needs
-    allocate (Tbd%ozpl  (IM,levozp,oz_coeff))
+    allocate (Tbd%ozpl  (IM,Model%levozp,Model%oz_coeff))
     allocate (Tbd%h2opl (IM,levh2o,h2o_coeff))
     Tbd%ozpl  = clear_val
     Tbd%h2opl = clear_val
