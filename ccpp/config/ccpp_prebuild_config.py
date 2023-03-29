@@ -20,7 +20,6 @@ VARIABLE_DEFINITION_FILES = [
     'ccpp/physics/physics/radsw_param.f',
     'ccpp/physics/physics/radlw_param.f',
     'ccpp/physics/physics/h2o_def.f',
-    'ccpp/physics/physics/ozne_def.f',
     'ccpp/physics/physics/radiation_surface.f',
     'scm/src/CCPP_typedefs.F90',
     'scm/src/GFS_typedefs.F90',

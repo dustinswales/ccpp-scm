@@ -1011,6 +1011,7 @@ module GFS_typedefs
     real (kind=kind_phys)          :: dphiozc
     real (kind=kind_phys), pointer :: oz_lat(:)
     real (kind=kind_phys), pointer :: oz_pres(:)
+    real (kind=kind_phys), pointer :: po3(:)
     real (kind=kind_phys), pointer :: oz_time(:)
     real (kind=kind_phys), pointer :: ozplin(:,:,:,:)
 
@@ -5059,6 +5060,7 @@ module GFS_typedefs
        endif
        allocate (Model%oz_lat(Model%latsozp))
        allocate (Model%oz_pres(Model%levozp))
+       allocate (Model%po3(Model%levozp))
        allocate (Model%oz_time(Model%timeoz+1))
        allocate (Model%ozplin(Model%latsozp,Model%levozp,Model%oz_coeff,Model%timeoz))
        close(Model%kozpl)
