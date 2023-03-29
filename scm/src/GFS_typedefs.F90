@@ -615,8 +615,6 @@ module GFS_typedefs
     integer              :: communicator    !< MPI communicator
     integer              :: ntasks          !< MPI size in communicator
     integer              :: nthreads        !< OpenMP threads available for physics
-    integer              :: ccpp_inst       !< my CCPP-physics instance
-    integer              :: ccpp_inst_main  !< main CCPP-physics instance 
     integer              :: nlunit          !< unit for namelist
     character(len=64)    :: fn_nml          !< namelist filename for surface data cycling
     character(len=:), pointer, dimension(:) :: input_nml_file => null() !< character string containing full namelist
@@ -1003,9 +1001,6 @@ module GFS_typedefs
     integer                        :: latsozp
     integer                        :: levozp
     integer                        :: timeoz
-    integer                        :: latsozc
-    integer                        :: levozc
-    integer                        :: timeozc
     integer                        :: oz_coeff
     real (kind=kind_phys)          :: blatc
     real (kind=kind_phys)          :: dphiozc
@@ -3702,7 +3697,9 @@ module GFS_typedefs
     logical :: have_pbl, have_dcnv, have_scnv, have_mp, have_oz_phys, have_samf, have_pbl_edmf, have_cnvtrans, have_rdamp
     character(len=20) :: namestr
     character(len=44) :: descstr
-    real(kind=kind_phys) :: blatc4
+!--- ozone physics
+    integer :: i1, i2, i3
+    real(kind=4), dimension(:), allocatable :: oz_lat4, oz_pres4, oz_time4, tempin
 
     ! dtend selection: default is to match all variables:
     dtend_select(1)='*'
@@ -3751,7 +3748,6 @@ module GFS_typedefs
     Model%fhzero           = fhzero
     Model%ldiag3d          = ldiag3d
     Model%qdiag3d          = qdiag3d
-    Model%ccpp_inst_main   = 1
     if (qdiag3d .and. .not. ldiag3d) then
       write(0,*) 'Logic error in GFS_typedefs.F90: qdiag3d requires ldiag3d'
       stop
@@ -5032,25 +5028,11 @@ module GFS_typedefs
     ENDIF !}
 
     !--- ozone physics
-    if (Model%ntoz <= 0) then
-       rewind (Model%kozc)
-       read (Model%kozc,end=101) Model%latsozc, Model%levozc, Model%timeozc, blatc4
-101    if (Model%levozc  < 10 .or. Model%levozc > 100) then
-          rewind (Model%kozc)
-          Model%levozc  = 17
-          Model%latsozc = 18
-          Model%blatc   = -85.0
-       else
-          Model%blatc   = blatc4
-       endif
-       Model%latsozp   = 2
-       Model%levozp    = 1
-       Model%timeoz    = 1
-       Model%oz_coeff  = 0
-       Model%dphiozc = -(Model%blatc+Model%blatc)/(Model%latsozc-1)
-    else
+    if (Model%ntoz > 0) then
+       ! Get dimensions from data file
        open(unit=Model%kozpl,file='global_o3prdlos.f77', form='unformatted', convert='big_endian')
        read (Model%kozpl) Model%oz_coeff, Model%latsozp, Model%levozp, Model%timeoz
+       rewind(Model%kozpl)
        if (Model%me == Model%master) then
           write(*,*) 'Reading in o3data from global_o3prdlos.f77 '
           write(*,*) '      oz_coeff = ', Model%oz_coeff
@@ -5058,31 +5040,35 @@ module GFS_typedefs
           write(*,*) '        levozp = ', Model%levozp
           write(*,*) '        timeoz = ', Model%timeoz
        endif
+       ! Allocate space
        allocate (Model%oz_lat(Model%latsozp))
        allocate (Model%oz_pres(Model%levozp))
        allocate (Model%po3(Model%levozp))
        allocate (Model%oz_time(Model%timeoz+1))
        allocate (Model%ozplin(Model%latsozp,Model%levozp,Model%oz_coeff,Model%timeoz))
+       !
+       allocate(oz_lat4(Model%latsozp), oz_pres4(Model%levozp), oz_time4(Model%timeoz+1), tempin(Model%latsozp))
+       read (Model%kozpl) Model%oz_coeff, Model%latsozp, Model%levozp, Model%timeoz, oz_lat4, oz_pres4, oz_time4
+
+       ! Store
+       Model%oz_pres(:) = oz_pres4(:)
+       Model%po3(:)     = log(100.0*Model%oz_pres(:)) ! from mb to ln(Pa)
+       Model%oz_lat(:)  = oz_lat4(:)
+       Model%oz_time(:) = oz_time4(:)
+       !
+       do i1=1,Model%timeoz
+          do i2=1,Model%oz_coeff
+             do i3=1,Model%levozp
+                READ(Model%kozpl) tempin
+                Model%ozplin(:,i3,i2,i1) = tempin(:)
+             enddo
+          enddo
+       enddo
        close(Model%kozpl)
-       print*,'IN GFS_typedeffs:', Model%oz_coeff, Model%latsozp, Model%levozp, Model%timeoz
     endif
 
-    ! To ensure that these values match what's in the physics,
-    ! array sizes are compared during model init in GFS_phys_time_vary_init()
     !
-    ! from module ozinterp
-    if (Model%ntoz>0) then
-       if (Model%oz_phys) then
-          Model%levozp   = 80
-          Model%oz_coeff = 4
-       else if (Model%oz_phys_2015) then
-          Model%levozp   = 53
-          Model%oz_coeff = 6
-       else
-          write(*,*) 'Logic error, ntoz>0 but no ozone physics selected'
-          stop
-       end if
-    else
+    if (Model%ntoz < 0) then
        if (Model%oz_phys .or. Model%oz_phys_2015) then
           write(*,*) 'Logic error, ozone physics are selected, but ntoz<=0'
           stop
