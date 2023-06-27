@@ -29,6 +29,7 @@ echo "Setting up NCEPLIBS"
 setenv bacio_ROOT /scratch1/NCEPDEV/nems/role.epic/hpc-stack/libs/intel-2022.1.2/intel-2022.1.2/bacio/2.4.1
 setenv sp_ROOT /scratch1/NCEPDEV/nems/role.epic/hpc-stack/libs/intel-2022.1.2/intel-2022.1.2/sp/2.3.3
 setenv w3emc_ROOT /scratch1/NCEPDEV/nems/role.epic/hpc-stack/libs/intel-2022.1.2/intel-2022.1.2/w3emc/2.9.2
+setenv infero_ROOT /scratch1/BMC/gmtb/Dustin.Swales/ML-radiation/libs/infero/builds/infero
 
 echo "Setting CC/CXX/FC environment variables"
 setenv CC icc
@@ -43,5 +44,5 @@ setenv CMAKE_Fortran_COMPILER ifort
 setenv CMAKE_Platform hera.intel
 
 echo "Loading the SCM python environment"
-source /scratch1/BMC/gmtb/SCM_anaconda/etc/profile.d/conda.csh
-conda activate pyccpp
+#source /scratch1/BMC/gmtb/SCM_anaconda/etc/profile.d/conda.csh
+conda activate env_ufsreplay

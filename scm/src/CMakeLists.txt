@@ -75,6 +75,27 @@ SET(CCPP_PHYSICS_SRC ${CMAKE_SOURCE_DIR}/../../ccpp/physics)
 # Use rpaths on MacOSX
 set(CMAKE_MACOSX_RPATH 1)
 
+# Build ml schemes with Infero?
+if(DEFINED BUILD_WITH_INFERO)
+    # Has Infero installation directory, infero been defined?
+    if(DEFINED ENV{infero_ROOT})
+        SET(INFERO_FORTRAN_FLAGS "-lcnpy -linfero -linferoapi -linferof")
+        SET(INFERO_LIB_DIR $ENV{infero_ROOT})
+        SET(INFERO_LIB $ENV{infero_ROOT}/lib/libinferof.so)
+        # Does the install directory contain the Infero Fortran executable?
+        if (EXISTS ${INFERO_LIB})
+            message(STATUS "Building with Inferno based machine-learning physics schemes.")
+        else ()
+            message(STATUS "ERROR: Cannot find libinferof.so in infero_ROOT")
+        endif()
+        message(STATUS ${INFERO_LIB})
+    else ()
+        message(STATUS "ERROR: infero_ROOT not set.")
+    endif()
+    unset(BUILD_WITH_INFERO CACHE)
+    #
+endif()
+
 #------------------------------------------------------------------------------
 # Set a default build type if none was specified
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)

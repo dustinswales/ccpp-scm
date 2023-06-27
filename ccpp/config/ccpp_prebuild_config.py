@@ -205,7 +205,9 @@ SCHEME_FILES = [
     'ccpp/physics/physics/GFS_cloud_diagnostics.F90'        ,
     'ccpp/physics/physics/GFS_rrtmgp_cloud_mp.F90'          ,
     'ccpp/physics/physics/GFS_rrtmgp_cloud_overlap.F90'     ,
-    'ccpp/physics/physics/GFS_rrtmgp_post.F90'
+    'ccpp/physics/physics/GFS_rrtmgp_post.F90'              ,
+    # Radiation ML emulator
+    'ccpp/physics/physics/ml_rad_phys.F90'
     ]
 
 # Default build dir, relative to current working directory,
