@@ -6247,6 +6247,70 @@
   units = flag
   dimensions = ()
   type = logical
+[do_ml_rad]
+  standard_name = flag_for_machine_learning_radiation_scheme
+  long_name = flag for machine learning radiation scheme
+  units = flag
+  dimensions =  ()
+  type = logical
+[ml_rad_fileIN]
+  standard_name = filename_of_machine_learning_radiation_physics_data
+  long_name = file containing predictions and predictors for ML radiation
+  units = none
+  dimensions =  ()
+  type = character
+  kind = len=128
+[ncase_ml]
+  standard_name = number_of_cases_for_ml_radiation
+  long_name = number of cases for ml radiation
+  units = count
+  dimensions = ()
+  type = integer
+[nlev_ml]
+  standard_name = number_of_levels_for_ml_radiation
+  long_name = number of levels for ml radiation
+  units = count
+  dimensions = ()
+  type = integer
+[npred_ml]
+  standard_name = number_of_predictor_variables_for_ml_radiation
+  long_name = number of predictor variables for ml radiation
+  units = count
+  dimensions = ()
+  type = integer
+[ntar1d_ml]
+  standard_name = number_of_scalar_target_variables_for_ml_radiation
+  long_name = number of scalar target variables for ml radiation
+  units = count
+  dimensions = ()
+  type = integer
+[ntar2d_ml]
+  standard_name = number_of_vector_target_variables_for_ml_radiation
+  long_name = number of vector target variables for ml radiation
+  units = count
+  dimensions = ()
+  type = integer
+[predictor_matrix]
+  standard_name = predictor_matrix_for_ML_radiation
+  long_name = predictor matrix for ML radiation
+  units = none
+  dimensions = (number_of_predictor_variables_for_ml_radiation,number_of_levels_for_ml_radiation,number_of_cases_for_ml_radiation)
+  type = real
+  kind = kind_phys
+[vector_prediction_matrix]
+  standard_name = vector_prediction_matrix_for_ML_radiation
+  long_name = vector prediction matrix for ML radiation
+  units = none
+  dimensions = (number_of_vector_target_variables_for_ml_radiation,number_of_levels_for_ml_radiation,number_of_cases_for_ml_radiation)
+  type = real
+  kind = kind_phys
+[scalar_prediction_matrix]
+  standard_name = scalar_prediction_matrix_for_ML_radiation
+  long_name = scalar prediction matrix for ML radiation
+  units = none
+  dimensions = (number_of_scalar_target_variables_for_ml_radiation,number_of_cases_for_ml_radiation)
+  type = real
+  kind = kind_phys
 [ipt]
   standard_name = index_of_horizontal_gridpoint_for_debug_output
   long_name = horizontal index for point used for diagnostic printout

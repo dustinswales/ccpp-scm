@@ -76,6 +76,8 @@
     swhtr = .true.
     trans_trac = .true.
     use_ufo = .true.
+    do_ml_rad = .true.
+    ml_rad_fileIN = '/scratch1/BMC/gmtb/Dustin.Swales/ML-radiation/libs/Jebb/infero/infero/gsl/predictions_and_predictors_for_onnx_test.nc'
 /
 
 &gfdl_cloud_microphysics_nml

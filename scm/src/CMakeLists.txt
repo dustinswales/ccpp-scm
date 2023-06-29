@@ -269,6 +269,9 @@ TARGET_LINK_LIBRARIES(scm sp::sp_d)
 TARGET_LINK_LIBRARIES(scm w3emc::w3emc_d)
 TARGET_LINK_LIBRARIES(scm ccpp_framework)
 TARGET_LINK_LIBRARIES(scm ccpp_physics)
+if (EXISTS ${INFERO_LIB})
+    target_link_libraries(scm ${INFERO_LIB})
+endif()
 
 SET_TARGET_PROPERTIES(scm PROPERTIES
                                COMPILE_FLAGS "${CMAKE_Fortran_FLAGS}"

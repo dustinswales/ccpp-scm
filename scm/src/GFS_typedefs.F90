@@ -1489,6 +1489,17 @@ module GFS_typedefs
 !--- lightning threat and diagsnostics
     logical              :: lightning_threat !< report lightning threat indices
 
+!--- Machine-learning (ML) based radiation scheme
+    logical              :: do_ml_rad       !< Flag for machine learning based radiation physics
+    character(len=128)   :: ml_rad_fileIN   !< file containing predictions and predictors for ML radiation
+    integer              :: ncase_ml
+    integer              :: npred_ml
+    integer              :: nlev_ml
+    integer              :: ntar2d_ml
+    integer              :: ntar1d_ml
+    real(kind=kind_phys), allocatable :: predictor_matrix(:,:,:)         !< Predictor matrix for ML radiation
+    real(kind=kind_phys), allocatable :: vector_prediction_matrix(:,:,:) !< Prediction matrix for ML radiation !ONLY needed for testing implementation
+    real(kind=kind_phys), allocatable :: scalar_prediction_matrix(:,:)   !< Prediction matrix for ML radiation !ONLY needed for testing implementation
     contains
       procedure :: init            => control_initialize
       procedure :: init_chemistry  => control_chemistry_initialize
@@ -2963,6 +2974,7 @@ module GFS_typedefs
     use physcons,         only: con_rerth, con_pi, con_p0, rhowater
     use mersenne_twister, only: random_setseed, random_number
     use parse_tracers,    only: get_tracer_index
+    use netcdf
 !
     implicit none
 
@@ -3610,6 +3622,15 @@ module GFS_typedefs
 !-- Lightning threat index
     logical :: lightning_threat = .false.
 
+!--- Machine-learning (ML) based radiation scheme
+    logical              :: do_ml_rad      = .false. !< Flag for machine learning based radiation physics
+    character(len=128)   :: ml_rad_fileIN  = ''      !< file containing predictions and predictors for ML radiation
+    integer              :: ncase_ml       = -999
+    integer              :: npred_ml       = -999
+    integer              :: nlev_ml        = -999
+    integer              :: ntar2d_ml      = -999
+    integer              :: ntar1d_ml      = -999
+
 !--- aerosol scavenging factors
     integer, parameter :: max_scav_factors = 183
     character(len=40)  :: fscav_aero(max_scav_factors)
@@ -3761,7 +3782,9 @@ module GFS_typedefs
                           !          and (maybe) convection suppression
                                fh_dfi_radar, radar_tten_limits, do_cap_suppress,            &
                           !--- GSL lightning threat indices
-                               lightning_threat
+                               lightning_threat,                                            &
+                          !--- Machine-learning (ML) based radiation scheme
+                               do_ml_rad, ml_rad_fileIN
 
 !--- other parameters
     integer :: nctp    =  0                !< number of cloud types in CS scheme
@@ -3778,6 +3801,9 @@ module GFS_typedefs
     logical :: have_pbl, have_dcnv, have_scnv, have_mp, have_oz_phys, have_samf, have_pbl_edmf, have_cnvtrans, have_rdamp
     character(len=20) :: namestr
     character(len=44) :: descstr
+
+!--- Machine-learning (ML) based radiation scheme
+    integer :: status, ncid, dimid, varid
 
     ! dtend selection: default is to match all variables:
     dtend_select(1)='*'
@@ -3836,6 +3862,37 @@ module GFS_typedefs
     Model%flag_for_dcnv_generic_tend = .true.
 
     Model%lightning_threat = lightning_threat
+
+!--- Machine-learning (ML) based radiation scheme
+    Model%do_ml_rad     = do_ml_rad
+    Model%ml_rad_fileIN = ml_rad_fileIN
+    if (Model%do_ml_rad) then
+       call check_netCDF(nf90_open(Model%ml_rad_fileIN, NF90_NOWRITE, ncid))
+       !
+       call check_netCDF(nf90_inq_dimid(ncid, 'example', dimid))
+       call check_netCDF(nf90_inquire_dimension(ncid, dimid, len = Model%ncase_ml))
+       call check_netCDF(nf90_inq_dimid(ncid, 'height', dimid))
+       call check_netCDF(nf90_inquire_dimension(ncid, dimid, len = Model%nlev_ml))
+       call check_netCDF(nf90_inq_dimid(ncid, 'predictor_variable', dimid))
+       call check_netCDF(nf90_inquire_dimension(ncid, dimid, len = Model%npred_ml))
+       call check_netCDF(nf90_inq_dimid(ncid, 'vector_target_variable', dimid))
+       call check_netCDF(nf90_inquire_dimension(ncid, dimid, len = Model%ntar2d_ml))
+       call check_netCDF(nf90_inq_dimid(ncid, 'scalar_target_variable', dimid))
+       call check_netCDF(nf90_inquire_dimension(ncid, dimid, len = Model%ntar1d_ml))
+       !
+       allocate(Model%predictor_matrix(        Model%npred_ml,  Model%nlev_ml, Model%ncase_ml))
+       allocate(Model%vector_prediction_matrix(Model%ntar2d_ml, Model%nlev_ml, Model%ncase_ml))!ONLY needed for testing implementation 
+       allocate(Model%scalar_prediction_matrix(Model%ntar1d_ml,                Model%ncase_ml))!ONLY needed for testing implementation 
+       !
+       call check_netCDF(nf90_inq_varid(ncid, "predictor_matrix", varid))
+       call check_netCDF(nf90_get_var(ncid, varid, Model%predictor_matrix))
+       call check_netCDF(nf90_inq_varid(ncid, "vector_prediction_matrix", varid))!ONLY needed for testing implementation 
+       call check_netCDF(nf90_get_var(ncid, varid, Model%vector_prediction_matrix))!ONLY needed for testing implementation 
+       call check_netCDF(nf90_inq_varid(ncid, "scalar_prediction_matrix", varid))!ONLY needed for testing implementation 
+       call check_netCDF(nf90_get_var(ncid, varid, Model%scalar_prediction_matrix))!ONLY needed for testing implementation 
+       !
+       call check_netCDF(nf90_close(ncid))
+    endif
 
     Model%fh_dfi_radar     = fh_dfi_radar
     Model%num_dfi_radar    = 0
@@ -6522,6 +6579,9 @@ module GFS_typedefs
       print *, ' '
       print *, 'lightning threat indexes'
       print *, ' lightning_threat  : ', Model%lightning_threat
+      print *, 'machine learning based radiation'
+      print *, 'do_ml_rad          : ', Model%do_ml_rad
+      print *, 'ml_rad_fileIN      : ', Model%ml_rad_fileIN
     endif
 
   end subroutine control_print
@@ -7707,5 +7767,15 @@ module GFS_typedefs
     endif
 
   end subroutine diag_phys_zero
+
+  subroutine check_netCDF(status)
+    use netcdf
+    integer, intent ( in) :: status
+    if(status /= nf90_noerr) then
+       write(*,*) trim(nf90_strerror(status))
+       stop
+    end if
+
+  end subroutine check_netCDF
 
 end module GFS_typedefs
