@@ -6253,6 +6253,40 @@
   units = flag
   dimensions =  ()
   type = logical
+[debug_ml_rad]
+  standard_name = flag_for_machine_learning_radiation_scheme_debug_mode
+  long_name = flag for debug mode machine learning radiation scheme
+  units = flag
+  dimensions = ()
+  type = logical
+[infero_lw_model_path]
+  standard_name = infero_longwave_model_path
+  long_name = Infero longwave radiation model path
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=128
+[infero_lw_model_type]
+  standard_name = infero_longwave_model_type
+  long_name = Infero longwave radiation model type	
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=128
+[infero_sw_model_path]
+  standard_name = infero_shortwave_model_path
+  long_name = Infero shortwave radiation model path
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=128
+[infero_sw_model_type]
+  standard_name = infero_shortwave_model_type
+  long_name = Infero shortwave radiation model type
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=128
 [ml_rad_fileIN]
   standard_name = filename_of_machine_learning_radiation_physics_data
   long_name = file containing predictions and predictors for ML radiation

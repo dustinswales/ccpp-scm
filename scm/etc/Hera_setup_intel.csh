@@ -29,7 +29,11 @@ echo "Setting up NCEPLIBS"
 setenv bacio_ROOT /scratch1/NCEPDEV/nems/role.epic/hpc-stack/libs/intel-2022.1.2/intel-2022.1.2/bacio/2.4.1
 setenv sp_ROOT /scratch1/NCEPDEV/nems/role.epic/hpc-stack/libs/intel-2022.1.2/intel-2022.1.2/sp/2.3.3
 setenv w3emc_ROOT /scratch1/NCEPDEV/nems/role.epic/hpc-stack/libs/intel-2022.1.2/intel-2022.1.2/w3emc/2.9.2
+
+echo "Setting up Infero"
 setenv infero_ROOT /scratch1/BMC/gmtb/Dustin.Swales/ML-radiation/libs/infero/builds/infero
+setenv LD_LIBRARY_PATH /scratch1/BMC/gmtb/Dustin.Swales/ML-radiation/libs/infero/installs/lib:$LD_LIBRARY_PATH
+setenv LD_LIBRARY_PATH /scratch1/BMC/gmtb/Dustin.Swales/ML-radiation/libs/infero/installs/lib64:$LD_LIBRARY_PATH
 
 echo "Setting CC/CXX/FC environment variables"
 setenv CC icc

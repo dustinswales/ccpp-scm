@@ -1491,7 +1491,12 @@ module GFS_typedefs
 
 !--- Machine-learning (ML) based radiation scheme
     logical              :: do_ml_rad       !< Flag for machine learning based radiation physics
+    logical              :: debug_ml_rad    !< Flag for debug mode with machine learning based radiation physics
     character(len=128)   :: ml_rad_fileIN   !< file containing predictions and predictors for ML radiation
+    character(len=128)   :: infero_lw_model_path
+    character(len=128)   :: infero_lw_model_type
+    character(len=128)   :: infero_sw_model_path
+    character(len=128)   :: infero_sw_model_type
     integer              :: ncase_ml
     integer              :: npred_ml
     integer              :: nlev_ml
@@ -3624,7 +3629,12 @@ module GFS_typedefs
 
 !--- Machine-learning (ML) based radiation scheme
     logical              :: do_ml_rad      = .false. !< Flag for machine learning based radiation physics
+    logical              :: debug_ml_rad   = .false. !< Flag for debug mode with machine learning based radiation physics
     character(len=128)   :: ml_rad_fileIN  = ''      !< file containing predictions and predictors for ML radiation
+    character(len=128)   :: infero_lw_model_path = ''
+    character(len=128)   :: infero_lw_model_type = ''
+    character(len=128)   :: infero_sw_model_path = ''
+    character(len=128)   :: infero_sw_model_type = ''
     integer              :: ncase_ml       = -999
     integer              :: npred_ml       = -999
     integer              :: nlev_ml        = -999
@@ -3784,7 +3794,8 @@ module GFS_typedefs
                           !--- GSL lightning threat indices
                                lightning_threat,                                            &
                           !--- Machine-learning (ML) based radiation scheme
-                               do_ml_rad, ml_rad_fileIN
+                               do_ml_rad, debug_ml_rad, ml_rad_fileIN, infero_lw_model_path, infero_lw_model_type, &
+                               infero_sw_model_path, infero_sw_model_type
 
 !--- other parameters
     integer :: nctp    =  0                !< number of cloud types in CS scheme
@@ -3864,8 +3875,13 @@ module GFS_typedefs
     Model%lightning_threat = lightning_threat
 
 !--- Machine-learning (ML) based radiation scheme
-    Model%do_ml_rad     = do_ml_rad
-    Model%ml_rad_fileIN = ml_rad_fileIN
+    Model%do_ml_rad         = do_ml_rad
+    Model%debug_ml_rad      = debug_ml_rad
+    Model%ml_rad_fileIN     = ml_rad_fileIN
+    Model%infero_lw_model_path = infero_lw_model_path
+    Model%infero_lw_model_type = infero_lw_model_type
+    Model%infero_sw_model_path = infero_sw_model_path
+    Model%infero_sw_model_type = infero_sw_model_type
     if (Model%do_ml_rad) then
        call check_netCDF(nf90_open(Model%ml_rad_fileIN, NF90_NOWRITE, ncid))
        !
@@ -3880,7 +3896,7 @@ module GFS_typedefs
        call check_netCDF(nf90_inq_dimid(ncid, 'scalar_target_variable', dimid))
        call check_netCDF(nf90_inquire_dimension(ncid, dimid, len = Model%ntar1d_ml))
        !
-       allocate(Model%predictor_matrix(        Model%npred_ml,  Model%nlev_ml, Model%ncase_ml))
+       allocate(Model%predictor_matrix(        Model%npred_ml,  Model%nlev_ml, Model%ncase_ml))!ONLY needed for testing implementation
        allocate(Model%vector_prediction_matrix(Model%ntar2d_ml, Model%nlev_ml, Model%ncase_ml))!ONLY needed for testing implementation 
        allocate(Model%scalar_prediction_matrix(Model%ntar1d_ml,                Model%ncase_ml))!ONLY needed for testing implementation 
        !
@@ -6580,8 +6596,11 @@ module GFS_typedefs
       print *, 'lightning threat indexes'
       print *, ' lightning_threat  : ', Model%lightning_threat
       print *, 'machine learning based radiation'
-      print *, 'do_ml_rad          : ', Model%do_ml_rad
-      print *, 'ml_rad_fileIN      : ', Model%ml_rad_fileIN
+      print *, 'do_ml_rad           : ', Model%do_ml_rad
+      print *, 'debug_ml_rad        : ', Model%debug_ml_rad
+      print *, 'ml_rad_fileIN       : ', Model%ml_rad_fileIN
+      print *, 'infero_lw_model_path: ', Model%infero_lw_model_path
+      print *, 'infero_lw_model_type: ', Model%infero_lw_model_type
     endif
 
   end subroutine control_print
