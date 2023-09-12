@@ -6,6 +6,7 @@ module GFS_typedefs
    use module_radlw_parameters,  only: topflw_type, sfcflw_type
    use ozne_def,                 only: levozp, oz_coeff
    use h2o_def,                  only: levh2o, h2o_coeff
+   use module_rad_ml,            only: ty_rad_ml_data, ty_rad_ml_ref_data
 
    implicit none
 
@@ -1490,21 +1491,20 @@ module GFS_typedefs
     logical              :: lightning_threat !< report lightning threat indices
 
 !--- Machine-learning (ML) based radiation scheme
-    logical              :: do_ml_rad       !< Flag for machine learning based radiation physics
-    logical              :: debug_ml_rad    !< Flag for debug mode with machine learning based radiation physics
-    character(len=128)   :: ml_rad_fileIN   !< file containing predictions and predictors for ML radiation
+    logical              :: do_ml_rad            !< Flag for machine learning based radiation physics
+    logical              :: debug_ml_rad         !< Flag for debug mode with machine learning based radiation physics
+    character(len=128)   :: ml_rad_test_file_LW  !< File containing LW predictions and predictors.
+    character(len=128)   :: ml_rad_test_file_SW  !< File containing SW predictions and predictors.
+    character(len=128)   :: ml_rad_data_file_LW  !< File containing LW training data
+    character(len=128)   :: ml_rad_data_file_SW  !< File containing SW training data
     character(len=128)   :: infero_lw_model_path
     character(len=128)   :: infero_lw_model_type
     character(len=128)   :: infero_sw_model_path
     character(len=128)   :: infero_sw_model_type
-    integer              :: ncase_ml
-    integer              :: npred_ml
-    integer              :: nlev_ml
-    integer              :: ntar2d_ml
-    integer              :: ntar1d_ml
-    real(kind=kind_phys), allocatable :: predictor_matrix(:,:,:)         !< Predictor matrix for ML radiation
-    real(kind=kind_phys), allocatable :: vector_prediction_matrix(:,:,:) !< Prediction matrix for ML radiation !ONLY needed for testing implementation
-    real(kind=kind_phys), allocatable :: scalar_prediction_matrix(:,:)   !< Prediction matrix for ML radiation !ONLY needed for testing implementation
+    type(ty_rad_ml_data)     :: rad_ml_data_lw
+    type(ty_rad_ml_data)     :: rad_ml_data_sw
+    type(ty_rad_ml_ref_data) :: rad_ml_ref_data_lw
+    type(ty_rad_ml_ref_data) :: rad_ml_ref_data_sw
     contains
       procedure :: init            => control_initialize
       procedure :: init_chemistry  => control_chemistry_initialize
@@ -3630,16 +3630,14 @@ module GFS_typedefs
 !--- Machine-learning (ML) based radiation scheme
     logical              :: do_ml_rad      = .false. !< Flag for machine learning based radiation physics
     logical              :: debug_ml_rad   = .false. !< Flag for debug mode with machine learning based radiation physics
-    character(len=128)   :: ml_rad_fileIN  = ''      !< file containing predictions and predictors for ML radiation
+    character(len=128)   :: ml_rad_test_file_LW = '' !< File containing LW predictions and predictors.
+    character(len=128)   :: ml_rad_test_file_SW = '' !< File containing LW predictions and predictors.
+    character(len=128)   :: ml_rad_data_file_LW = ''
+    character(len=128)   :: ml_rad_data_file_SW = ''
     character(len=128)   :: infero_lw_model_path = ''
     character(len=128)   :: infero_lw_model_type = ''
     character(len=128)   :: infero_sw_model_path = ''
     character(len=128)   :: infero_sw_model_type = ''
-    integer              :: ncase_ml       = -999
-    integer              :: npred_ml       = -999
-    integer              :: nlev_ml        = -999
-    integer              :: ntar2d_ml      = -999
-    integer              :: ntar1d_ml      = -999
 
 !--- aerosol scavenging factors
     integer, parameter :: max_scav_factors = 183
@@ -3794,8 +3792,9 @@ module GFS_typedefs
                           !--- GSL lightning threat indices
                                lightning_threat,                                            &
                           !--- Machine-learning (ML) based radiation scheme
-                               do_ml_rad, debug_ml_rad, ml_rad_fileIN, infero_lw_model_path, infero_lw_model_type, &
-                               infero_sw_model_path, infero_sw_model_type
+                               do_ml_rad, debug_ml_rad, ml_rad_test_file_LW, ml_rad_test_file_SW, &
+                               infero_lw_model_path, infero_lw_model_type, &
+                               infero_sw_model_path, infero_sw_model_type, ml_rad_data_file_LW, ml_rad_data_file_SW
 
 !--- other parameters
     integer :: nctp    =  0                !< number of cloud types in CS scheme
@@ -3815,6 +3814,7 @@ module GFS_typedefs
 
 !--- Machine-learning (ML) based radiation scheme
     integer :: status, ncid, dimid, varid
+    character(len=128) :: err_message
 
     ! dtend selection: default is to match all variables:
     dtend_select(1)='*'
@@ -3875,40 +3875,28 @@ module GFS_typedefs
     Model%lightning_threat = lightning_threat
 
 !--- Machine-learning (ML) based radiation scheme
-    Model%do_ml_rad         = do_ml_rad
-    Model%debug_ml_rad      = debug_ml_rad
-    Model%ml_rad_fileIN     = ml_rad_fileIN
+    Model%do_ml_rad            = do_ml_rad
+    Model%debug_ml_rad         = debug_ml_rad
     Model%infero_lw_model_path = infero_lw_model_path
     Model%infero_lw_model_type = infero_lw_model_type
     Model%infero_sw_model_path = infero_sw_model_path
     Model%infero_sw_model_type = infero_sw_model_type
+    Model%ml_rad_test_file_LW  = ml_rad_test_file_LW
+    Model%ml_rad_test_file_SW  = ml_rad_test_file_SW
+    Model%ml_rad_data_file_LW  = ml_rad_data_file_LW
+    Model%ml_rad_data_file_SW  = ml_rad_data_file_SW
     if (Model%do_ml_rad) then
-       call check_netCDF(nf90_open(Model%ml_rad_fileIN, NF90_NOWRITE, ncid))
-       !
-       call check_netCDF(nf90_inq_dimid(ncid, 'example', dimid))
-       call check_netCDF(nf90_inquire_dimension(ncid, dimid, len = Model%ncase_ml))
-       call check_netCDF(nf90_inq_dimid(ncid, 'height', dimid))
-       call check_netCDF(nf90_inquire_dimension(ncid, dimid, len = Model%nlev_ml))
-       call check_netCDF(nf90_inq_dimid(ncid, 'predictor_variable', dimid))
-       call check_netCDF(nf90_inquire_dimension(ncid, dimid, len = Model%npred_ml))
-       call check_netCDF(nf90_inq_dimid(ncid, 'vector_target_variable', dimid))
-       call check_netCDF(nf90_inquire_dimension(ncid, dimid, len = Model%ntar2d_ml))
-       call check_netCDF(nf90_inq_dimid(ncid, 'scalar_target_variable', dimid))
-       call check_netCDF(nf90_inquire_dimension(ncid, dimid, len = Model%ntar1d_ml))
-       !
-       allocate(Model%predictor_matrix(        Model%npred_ml,  Model%nlev_ml, Model%ncase_ml))!ONLY needed for testing implementation
-       allocate(Model%vector_prediction_matrix(Model%ntar2d_ml, Model%nlev_ml, Model%ncase_ml))!ONLY needed for testing implementation 
-       allocate(Model%scalar_prediction_matrix(Model%ntar1d_ml,                Model%ncase_ml))!ONLY needed for testing implementation 
-       !
-       call check_netCDF(nf90_inq_varid(ncid, "predictor_matrix", varid))
-       call check_netCDF(nf90_get_var(ncid, varid, Model%predictor_matrix))
-       call check_netCDF(nf90_inq_varid(ncid, "vector_prediction_matrix", varid))!ONLY needed for testing implementation 
-       call check_netCDF(nf90_get_var(ncid, varid, Model%vector_prediction_matrix))!ONLY needed for testing implementation 
-       call check_netCDF(nf90_inq_varid(ncid, "scalar_prediction_matrix", varid))!ONLY needed for testing implementation 
-       call check_netCDF(nf90_get_var(ncid, varid, Model%scalar_prediction_matrix))!ONLY needed for testing implementation 
-       !
-       call check_netCDF(nf90_close(ncid))
+       ! Read in reference data, used for debugging purposes.
+       if (Model%debug_ml_rad) then
+          err_message = Model%rad_ml_ref_data_lw%load(Model%ml_rad_test_file_LW)
+          err_message = Model%rad_ml_ref_data_sw%load(Model%ml_rad_test_file_SW)
+       endif
+
+       ! Read in training data, used for normalization of state prior to calling scheme.
+       err_message = Model%rad_ml_data_lw%load(Model%ml_rad_data_file_LW,10000)
+       err_message = Model%rad_ml_data_sw%load(Model%ml_rad_data_file_SW,10000)
     endif
+
 
     Model%fh_dfi_radar     = fh_dfi_radar
     Model%num_dfi_radar    = 0
@@ -6598,7 +6586,10 @@ module GFS_typedefs
       print *, 'machine learning based radiation'
       print *, 'do_ml_rad           : ', Model%do_ml_rad
       print *, 'debug_ml_rad        : ', Model%debug_ml_rad
-      print *, 'ml_rad_fileIN       : ', Model%ml_rad_fileIN
+      print *, 'ml_rad_data_file_LW : ', Model%ml_rad_data_file_LW
+      print *, 'ml_rad_data_file_SW : ', Model%ml_rad_data_file_SW
+      print *, 'ml_rad_test_file_LW : ', Model%ml_rad_test_file_LW
+      print *, 'ml_rad_test_file_SW : ', Model%ml_rad_test_file_SW
       print *, 'infero_lw_model_path: ', Model%infero_lw_model_path
       print *, 'infero_lw_model_type: ', Model%infero_lw_model_type
     endif

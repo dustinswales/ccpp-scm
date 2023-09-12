@@ -6259,6 +6259,30 @@
   units = flag
   dimensions = ()
   type = logical
+[rad_ml_data_lw]
+  standard_name = training_data_used_in_machine_learning_longwave_radiation
+  long_name = training data used in machine learning longwave radiation
+  units = mixed
+  dimensions = ()
+  type = ty_rad_ml_data
+[rad_ml_data_sw]
+  standard_name = training_data_used_in_machine_learning_shortwave_radiation
+  long_name = training data used in machine learning shortwave radiation
+  units = mixed
+  dimensions = ()
+  type = ty_rad_ml_data
+[rad_ml_ref_data_lw]
+  standard_name = reference_data_for_machine_learning_longwave_radiation
+  long_name = reference data for machine learning longwave radiation
+  units = mixed
+  dimensions = ()
+  type = ty_rad_ml_ref_data
+[rad_ml_ref_data_sw]
+  standard_name = reference_data_for_machine_learning_shortwave_radiation
+  long_name = reference data for machine learning shortwave radiation
+  units = mixed
+  dimensions = ()
+  type = ty_rad_ml_ref_data
 [infero_lw_model_path]
   standard_name = infero_longwave_model_path
   long_name = Infero longwave radiation model path
@@ -6287,64 +6311,6 @@
   dimensions = ()
   type = character
   kind = len=128
-[ml_rad_fileIN]
-  standard_name = filename_of_machine_learning_radiation_physics_data
-  long_name = file containing predictions and predictors for ML radiation
-  units = none
-  dimensions =  ()
-  type = character
-  kind = len=128
-[ncase_ml]
-  standard_name = number_of_cases_for_ml_radiation
-  long_name = number of cases for ml radiation
-  units = count
-  dimensions = ()
-  type = integer
-[nlev_ml]
-  standard_name = number_of_levels_for_ml_radiation
-  long_name = number of levels for ml radiation
-  units = count
-  dimensions = ()
-  type = integer
-[npred_ml]
-  standard_name = number_of_predictor_variables_for_ml_radiation
-  long_name = number of predictor variables for ml radiation
-  units = count
-  dimensions = ()
-  type = integer
-[ntar1d_ml]
-  standard_name = number_of_scalar_target_variables_for_ml_radiation
-  long_name = number of scalar target variables for ml radiation
-  units = count
-  dimensions = ()
-  type = integer
-[ntar2d_ml]
-  standard_name = number_of_vector_target_variables_for_ml_radiation
-  long_name = number of vector target variables for ml radiation
-  units = count
-  dimensions = ()
-  type = integer
-[predictor_matrix]
-  standard_name = predictor_matrix_for_ML_radiation
-  long_name = predictor matrix for ML radiation
-  units = none
-  dimensions = (number_of_predictor_variables_for_ml_radiation,number_of_levels_for_ml_radiation,number_of_cases_for_ml_radiation)
-  type = real
-  kind = kind_phys
-[vector_prediction_matrix]
-  standard_name = vector_prediction_matrix_for_ML_radiation
-  long_name = vector prediction matrix for ML radiation
-  units = none
-  dimensions = (number_of_vector_target_variables_for_ml_radiation,number_of_levels_for_ml_radiation,number_of_cases_for_ml_radiation)
-  type = real
-  kind = kind_phys
-[scalar_prediction_matrix]
-  standard_name = scalar_prediction_matrix_for_ML_radiation
-  long_name = scalar prediction matrix for ML radiation
-  units = none
-  dimensions = (number_of_scalar_target_variables_for_ml_radiation,number_of_cases_for_ml_radiation)
-  type = real
-  kind = kind_phys
 [ipt]
   standard_name = index_of_horizontal_gridpoint_for_debug_output
   long_name = horizontal index for point used for diagnostic printout
@@ -9222,6 +9188,7 @@
   relative_path = ../../ccpp/physics/physics
   dependencies = machine.F,physcons.F90,radlw_param.f,radsw_param.f
   dependencies = GFDL_parse_tracers.F90,h2o_def.f,ozne_def.f
+  dependencies = module_rad_ml.F90
 
 [ccpp-arg-table]
   name = GFS_typedefs
