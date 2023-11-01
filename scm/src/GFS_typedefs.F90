@@ -6,7 +6,7 @@ module GFS_typedefs
    use module_radlw_parameters,  only: topflw_type, sfcflw_type
    use ozne_def,                 only: levozp, oz_coeff
    use h2o_def,                  only: levh2o, h2o_coeff
-   use module_rad_ml,            only: ty_rad_ml_data, ty_rad_ml_ref_data
+   use module_mlrad,             only: ty_rad_ml_data, ty_rad_ml_ref_data
 
    implicit none
 
@@ -3893,8 +3893,8 @@ module GFS_typedefs
        endif
 
        ! Read in training data, used for normalization of state prior to calling scheme.
-       err_message = Model%rad_ml_data_lw%load(Model%ml_rad_data_file_LW,10000)
-       err_message = Model%rad_ml_data_sw%load(Model%ml_rad_data_file_SW,10000)
+       err_message = Model%rad_ml_data_lw%load(Model%ml_rad_data_file_LW,.true.)
+       err_message = Model%rad_ml_data_sw%load(Model%ml_rad_data_file_SW,.false.)
     endif
 
 

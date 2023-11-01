@@ -9188,7 +9188,7 @@
   relative_path = ../../ccpp/physics/physics
   dependencies = machine.F,physcons.F90,radlw_param.f,radsw_param.f
   dependencies = GFDL_parse_tracers.F90,h2o_def.f,ozne_def.f
-  dependencies = module_rad_ml.F90
+  dependencies = module_mlrad.F90
 
 [ccpp-arg-table]
   name = GFS_typedefs

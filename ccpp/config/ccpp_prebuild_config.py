@@ -22,7 +22,7 @@ VARIABLE_DEFINITION_FILES = [
     'ccpp/physics/physics/h2o_def.f',
     'ccpp/physics/physics/ozne_def.f',
     'ccpp/physics/physics/radiation_surface.f',
-    'ccpp/physics/physics/module_rad_ml.F90',
+    'ccpp/physics/physics/module_mlrad.F90',
     'scm/src/CCPP_typedefs.F90',
     'scm/src/GFS_typedefs.F90',
     'scm/src/scm_kinds.F90',
@@ -39,14 +39,14 @@ TYPEDEFS_NEW_METADATA = {
     'machine' : {
         'machine' : '',
         },
-    'module_radlw_parameters' : {
+    'module_radsw_parameters' : {
         'module_radsw_parameters' : '',
         },
     'module_radlw_parameters' : {
         'module_radlw_parameters' : '',
         },
-    'module_rad_ml' : {
-        'module_rad_ml'      : '',
+    'module_mlrad' : {
+        'module_mlrad'       : '',
         'ty_rad_ml_data'     : '',
         'ty_rad_ml_ref_data' : '',
         },
@@ -213,7 +213,7 @@ SCHEME_FILES = [
     'ccpp/physics/physics/GFS_rrtmgp_cloud_overlap.F90'     ,
     'ccpp/physics/physics/GFS_rrtmgp_post.F90'              ,
     # Radiation ML emulator
-    'ccpp/physics/physics/ml_rad_phys.F90'
+    'ccpp/physics/physics/mlrad_driver.F90'
     ]
 
 # Default build dir, relative to current working directory,

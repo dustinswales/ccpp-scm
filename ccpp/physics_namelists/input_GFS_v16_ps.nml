@@ -75,6 +75,14 @@
     swhtr = .true.
     trans_trac = .true.
     use_ufo = .true.
+    do_ml_rad = .true.
+    debug_ml_rad = .false.
+    ml_rad_test_file_LW = '/scratch1/BMC/gmtb/Dustin.Swales/ML-radiation/onnx/LW/predictions_and_all_predictors_for_onnx_test.nc'
+    ml_rad_test_file_SW = '/scratch1/BMC/gmtb/Dustin.Swales/ML-radiation/onnx/SW/predictions_and_all_predictors_for_onnx_test.nc'
+    infero_lw_model_path = '/scratch1/BMC/gmtb/Dustin.Swales/ML-radiation/onnx/LW/model.onnx'
+    infero_lw_model_type = 'onnx'
+    ml_rad_data_file_LW = '/scratch1/BMC/gmtb/Dustin.Swales/ML-radiation/onnx/LW/piecewise_linear_models_for_uniformization.nc'
+    ml_rad_data_file_SW = '/scratch1/BMC/gmtb/Dustin.Swales/ML-radiation/onnx/SW/piecewise_linear_models_for_uniformization.nc'
 /
 
 &gfdl_cloud_microphysics_nml

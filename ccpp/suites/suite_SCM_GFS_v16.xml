@@ -21,7 +21,7 @@
       <scheme>rrtmg_lw</scheme>
       <scheme>rrtmg_lw_post</scheme>
       <scheme>GFS_rrtmg_post</scheme>
-      <scheme>ml_rad_phys</scheme>
+      <scheme>mlrad_driver</scheme>
     </subcycle>
   </group>
   <group name="physics">
