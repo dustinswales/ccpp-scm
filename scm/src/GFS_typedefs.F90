@@ -6,7 +6,7 @@ module GFS_typedefs
    use module_radlw_parameters,  only: topflw_type, sfcflw_type
    use ozne_def,                 only: levozp, oz_coeff
    use h2o_def,                  only: levh2o, h2o_coeff
-   use module_mlrad,             only: ty_rad_ml_data, ty_rad_ml_ref_data
+   use module_mlrad,             only: ty_mlrad_data
 
    implicit none
 
@@ -1501,10 +1501,7 @@ module GFS_typedefs
     character(len=128)   :: infero_lw_model_type
     character(len=128)   :: infero_sw_model_path
     character(len=128)   :: infero_sw_model_type
-    type(ty_rad_ml_data)     :: rad_ml_data_lw
-    type(ty_rad_ml_data)     :: rad_ml_data_sw
-    type(ty_rad_ml_ref_data) :: rad_ml_ref_data_lw
-    type(ty_rad_ml_ref_data) :: rad_ml_ref_data_sw
+    type(ty_mlrad_data)  :: mlrad_data
     contains
       procedure :: init            => control_initialize
       procedure :: init_chemistry  => control_chemistry_initialize
@@ -3886,15 +3883,9 @@ module GFS_typedefs
     Model%ml_rad_data_file_LW  = ml_rad_data_file_LW
     Model%ml_rad_data_file_SW  = ml_rad_data_file_SW
     if (Model%do_ml_rad) then
-       ! Read in reference data, used for debugging purposes.
-       if (Model%debug_ml_rad) then
-          err_message = Model%rad_ml_ref_data_lw%load(Model%ml_rad_test_file_LW)
-          err_message = Model%rad_ml_ref_data_sw%load(Model%ml_rad_test_file_SW)
-       endif
-
        ! Read in training data, used for normalization of state prior to calling scheme.
-       err_message = Model%rad_ml_data_lw%load(Model%ml_rad_data_file_LW,.true.)
-       err_message = Model%rad_ml_data_sw%load(Model%ml_rad_data_file_SW,.false.)
+       err_message = Model%mlrad_data%load(Model%ml_rad_data_file_LW,.true.)
+       err_message = Model%mlrad_data%load(Model%ml_rad_data_file_SW,.false.)
     endif
 
 

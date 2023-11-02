@@ -46,9 +46,8 @@ TYPEDEFS_NEW_METADATA = {
         'module_radlw_parameters' : '',
         },
     'module_mlrad' : {
-        'module_mlrad'       : '',
-        'ty_rad_ml_data'     : '',
-        'ty_rad_ml_ref_data' : '',
+        'module_mlrad'      : '',
+        'ty_mlrad_data'     : '',
         },
     'CCPP_typedefs' : {
         'GFS_interstitial_type' : 'physics%Interstitial',
