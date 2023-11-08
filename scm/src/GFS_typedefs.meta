@@ -6265,6 +6265,12 @@
   units = mixed
   dimensions = ()
   type = ty_mlrad_data
+[rad_ml_ref_data_lw]
+  standard_name = reference_data_for_machine_learning_longwave_radiation
+  long_name = reference data for machine learning longwave radiation
+  units = mixed
+  dimensions = ()
+  type = ty_rad_ml_ref_data
 [infero_lw_model_path]
   standard_name = infero_longwave_model_path
   long_name = Infero longwave radiation model path
