@@ -41,7 +41,7 @@ setenv CXX icpc
 setenv FC ifort
 
 echo "Loading cmake"
-module load cmake/3.20.1
+module load cmake/3.28.1
 setenv CMAKE_C_COMPILER icc
 setenv CMAKE_CXX_COMPILER icpc
 setenv CMAKE_Fortran_COMPILER ifort

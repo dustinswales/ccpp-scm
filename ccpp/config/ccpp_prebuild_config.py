@@ -48,6 +48,7 @@ TYPEDEFS_NEW_METADATA = {
     'module_mlrad' : {
         'module_mlrad'      : '',
         'ty_mlrad_data'     : '',
+        },
     'module_ozphys' : {
         'module_ozphys' : '',
         'ty_ozphys'     : '',
@@ -218,7 +219,7 @@ SCHEME_FILES = [
     'ccpp/physics/physics/smoke_dust/rrfs_smoke_wrapper.F90',
     'ccpp/physics/physics/smoke_dust/rrfs_smoke_postpbl.F90',
     # Radiation ML emulator
-    'ccpp/physics/physics/mlrad_driver.F90'
+    'ccpp/physics/physics/mlrad_driver.F90',
     'ccpp/physics/physics/tools/get_prs_fv3.F90',
     'ccpp/physics/physics/tools/get_phi_fv3.F90'
     ]
