@@ -55,6 +55,13 @@
   dimensions = ()
   type = real
   kind = kind_phys
+[con_1ovg]
+  standard_name = one_divided_by_the_gravitational_acceleration
+  long_name = inverse of gravitational acceleration
+  units = s2 m-1
+  dimensions = ()
+  type = real
+  kind = kind_phys
 [con_rocp]
   standard_name = ratio_of_gas_constant_dry_air_to_specific_heat_of_dry_air_at_constant_pressure
   long_name = (rd/cp)
@@ -212,6 +219,13 @@
 [rhowater]
   standard_name = fresh_liquid_water_density_at_0c
   long_name = density of liquid water
+  units = kg m-3
+  dimensions = ()
+  type = real
+  kind = kind_phys
+[rholakeice]
+  standard_name = density_of_ice_on_lake
+  long_name = density of ice on a lake
   units = kg m-3
   dimensions = ()
   type = real

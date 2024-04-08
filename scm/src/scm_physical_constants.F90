@@ -32,9 +32,10 @@ public
 
   real(kind=dp),parameter:: con_rocp   =con_rd/con_cp
   real(kind=dp),parameter:: con_rog    =con_rd/con_g
-  real(kind=dp),parameter:: con_fvirt  =con_rv/con_rd - 1
+  real(kind=dp),parameter:: con_fvirt  =con_rv/con_rd - 1._dp
   real(kind=dp),parameter:: con_eps    =con_rd/con_rv
-  real(kind=dp),parameter:: con_epsm1  =con_rd/con_rv-1.
+  real(kind=dp),parameter:: con_epsm1  =con_rd/con_rv - 1._dp
+  real(kind=dp),parameter:: con_1ovg   =1._dp/con_g
 
   real(kind=dp),parameter:: karman = 0.4_dp
   
@@ -48,6 +49,8 @@ public
   real(kind=dp),parameter:: con_tice   =2.7120e+2
   
   real(kind=dp),parameter:: rhowater   =1000._dp
+  real(kind=dp),parameter:: rholakeice = 0.917e3_dp          !< density of ice on lake (kg/m^3)
+
 
   real(kind=dp),parameter:: con_c         = 2.99792458e+8_dp !< speed of light (\f$m/s\f$)
   real(kind=dp),parameter:: con_plnk      = 6.6260693e-34_dp !< planck constant (\f$J/s\f$)

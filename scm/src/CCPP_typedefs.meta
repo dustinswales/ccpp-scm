@@ -890,6 +890,12 @@
   units = flag
   dimensions = (horizontal_loop_extent)
   type = logical
+[flag_lakefreeze]
+  standard_name = flag_for_lake_water_freeze
+  long_name = flag for lake water freeze
+  units = flag
+  dimensions = (horizontal_loop_extent)
+  type = logical
 [ffmm_water]
   standard_name = Monin_Obukhov_similarity_function_for_momentum_over_water
   long_name = Monin-Obukhov similarity function for momentum over water
@@ -1235,12 +1241,6 @@
 [lake]
   standard_name = flag_nonzero_lake_surface_fraction
   long_name = flag indicating presence of some lake surface area fraction
-  units = flag
-  dimensions = (horizontal_loop_extent)
-  type = logical
-[use_flake]
-  standard_name = flag_for_using_flake
-  long_name = flag indicating lake points using flake model
   units = flag
   dimensions = (horizontal_loop_extent)
   type = logical
@@ -2845,17 +2845,22 @@
   units = count
   dimensions = ()
   type = integer
+[active_phys_tend]
+  standard_name = tendencies_for_active_process_in_ccpp_suite_simulator
+  long_name = tendencies for active physics process in ccpp suite simulator
+  units = mixed
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension,number_of_prognostics_varaibles_in_CCPP_suite_simulator)
+  type = real
+  kind = kind_phys
+  active = (flag_for_CCPP_suite_simulator)
 
 ########################################################################
 [ccpp-table-properties]
   name = CCPP_typedefs
   type = module
   relative_path = ../../ccpp/physics/physics
-  dependencies = machine.F,ozne_def.f,radlw_param.f,radsw_param.f
-  dependencies = rte-rrtmgp/rrtmgp/mo_gas_optics_rrtmgp.F90,rte-rrtmgp/rte/mo_optical_props.F90
-  dependencies = rte-rrtmgp/extensions/cloud_optics/mo_cloud_optics.F90
-  dependencies = rte-rrtmgp/rrtmgp/mo_gas_concentrations.F90,rte-rrtmgp/rte/mo_rte_config.F90
-  dependencies = rte-rrtmgp/rte/mo_source_functions.F90
+  dependencies = hooks/machine.F,photochem/module_ozphys.F90
+  dependencies = Radiation/RRTMG/radlw_param.f,Radiation/RRTMG/radsw_param.f
 
 [ccpp-arg-table]
   name = CCPP_typedefs

@@ -8,7 +8,6 @@ module CCPP_typedefs
     use machine,  only: kind_grid, kind_dyn, kind_phys
 
     ! Constants/dimensions needed for interstitial DDTs
-    use ozne_def,                 only: oz_coeff
     use GFS_typedefs,             only: clear_val, LTP
 
     ! Physics type defininitions needed for interstitial DDTs
@@ -138,6 +137,7 @@ module CCPP_typedefs
     logical,               pointer      :: flag_cice(:)       => null()  !<
     logical,               pointer      :: flag_guess(:)      => null()  !<
     logical,               pointer      :: flag_iter(:)       => null()  !<
+    logical,               pointer      :: flag_lakefreeze(:) => null()  !<
     real (kind=kind_phys), pointer      :: ffmm_ice(:)        => null()  !<
     real (kind=kind_phys), pointer      :: ffmm_land(:)       => null()  !<
     real (kind=kind_phys), pointer      :: ffmm_water(:)      => null()  !<
@@ -181,7 +181,6 @@ module CCPP_typedefs
     integer,               pointer      :: idxday(:)          => null()  !<
     logical,               pointer      :: icy(:)             => null()  !<
     logical,               pointer      :: lake(:)            => null()  !<
-    logical,               pointer      :: use_flake(:)       => null()  !<
     logical,               pointer      :: ocean(:)           => null()  !<
     integer                             :: ipr                           !<
     integer,               pointer      :: islmsk(:)          => null()  !<
@@ -417,6 +416,9 @@ module CCPP_typedefs
     !-- 3D diagnostics
     integer :: rtg_ozone_index, rtg_tke_index
 
+    !-- CCPP suite simulator
+    real (kind=kind_phys), pointer      :: active_phys_tend(:,:,:) => null() ! tendencies for active physics process
+
     contains
 
       procedure :: create      => gfs_interstitial_create     !<   allocate array data
@@ -538,6 +540,7 @@ contains
     allocate (Interstitial%flag_cice       (IM))
     allocate (Interstitial%flag_guess      (IM))
     allocate (Interstitial%flag_iter       (IM))
+    allocate (Interstitial%flag_lakefreeze (IM))
     allocate (Interstitial%ffmm_ice        (IM))
     allocate (Interstitial%ffmm_land       (IM))
     allocate (Interstitial%ffmm_water      (IM))
@@ -576,7 +579,6 @@ contains
     allocate (Interstitial%idxday          (IM))
     allocate (Interstitial%icy             (IM))
     allocate (Interstitial%lake            (IM))
-    allocate (Interstitial%use_flake       (IM))
     allocate (Interstitial%ocean           (IM))
     allocate (Interstitial%islmsk          (IM))
     allocate (Interstitial%islmsk_cice     (IM))
@@ -811,7 +813,7 @@ contains
     Interstitial%nf_albd          = NF_ALBD
     Interstitial%nspc1            = NSPC1
     if (Model%oz_phys .or. Model%oz_phys_2015) then
-      Interstitial%oz_coeffp5     = oz_coeff+5
+      Interstitial%oz_coeffp5     = Model%oz_coeff+5
     else
       Interstitial%oz_coeffp5     = 5
     endif
@@ -821,6 +823,13 @@ contains
     ! hardcoded value for calling GFDL MP in GFS_physics_driver.F90,
     ! which is set to .true.
     Interstitial%phys_hydrostatic = .true.
+
+    !
+    ! CCPP suite simulator
+    if (Model%do_ccpp_suite_sim) then
+       allocate (Interstitial%active_phys_tend(IM,Model%levs,Model%physics_process(1)%nprg_active))
+    endif
+
     !
     ! Reset all other variables
     call Interstitial%rad_reset (Model)
@@ -859,6 +868,8 @@ contains
     if (Model%imp_physics == Model%imp_physics_thompson) then
       if (Model%ltaerosol) then
         Interstitial%nvdiff = 12
+     else if (Model%mraerosol) then
+        Interstitial%nvdiff = 10
       else
         Interstitial%nvdiff = 9
       endif
@@ -948,6 +959,8 @@ contains
       elseif (Model%imp_physics == Model%imp_physics_thompson) then
         if (Model%ltaerosol) then
           Interstitial%nvdiff = 12
+        else if (Model%mraerosol) then
+          Interstitial%nvdiff = 10
         else
           Interstitial%nvdiff = 9
         endif
@@ -984,11 +997,12 @@ contains
       tracers = 2
       do n=2,Model%ntrac
         ltest = ( n /= Model%ntcw  .and. n /= Model%ntiw  .and. n /= Model%ntclamt .and. &
-             n /= Model%ntrw  .and. n /= Model%ntsw  .and. n /= Model%ntrnc   .and. &
-             n /= Model%ntsnc .and. n /= Model%ntgl  .and. n /= Model%ntgnc   .and. &
-             n /= Model%nthl  .and. n /= Model%nthnc .and. n /= Model%ntgv    .and. &
-             n /= Model%nthv  .and. n /= Model%ntccn .and. n /= Model%ntccna .and.  &
-             n /= Model%ntsigma)
+                  n /= Model%ntrw  .and. n /= Model%ntsw  .and. n /= Model%ntrnc   .and. &
+                  n /= Model%ntsnc .and. n /= Model%ntgl  .and. n /= Model%ntgnc   .and. &
+                  n /= Model%nthl  .and. n /= Model%nthnc .and. n /= Model%ntgv    .and. &
+                  n /= Model%nthv  .and. n /= Model%ntccn .and. n /= Model%ntccna  .and. &
+                  n /= Model%ntrz  .and. n /= Model%ntgz  .and. n /= Model%nthz    .and. &
+                  n /= Model%ntsigma)
         Interstitial%otsptflag(n) = ltest
         if ( ltest ) then
           tracers = tracers + 1
@@ -1223,6 +1237,7 @@ contains
     Interstitial%flag_cice       = .false.
     Interstitial%flag_guess      = .false.
     Interstitial%flag_iter       = .true.
+    Interstitial%flag_lakefreeze = .false.
     Interstitial%ffmm_ice        = Model%huge
     Interstitial%ffmm_land       = Model%huge
     Interstitial%ffmm_water      = Model%huge
@@ -1255,7 +1270,6 @@ contains
     Interstitial%dry             = .false.
     Interstitial%icy             = .false.
     Interstitial%lake            = .false.
-    Interstitial%use_flake       = .false.
     Interstitial%ocean           = .false.
     Interstitial%islmsk          = 0
     Interstitial%islmsk_cice     = 0
@@ -1412,6 +1426,13 @@ contains
       Interstitial%fullradar_diag = (Model%kdt == 1 .or. mod(Model%kdt, nint(Model%nsfullradar_diag/Model%dtp)) == 0) 
     end if
     !
+
+    !
+    ! CCPP suite simulator
+    if (Model%do_ccpp_suite_sim) then
+       Interstitial%active_phys_tend = clear_val
+    endif
+
   end subroutine gfs_interstitial_phys_reset
 
 end module CCPP_typedefs
