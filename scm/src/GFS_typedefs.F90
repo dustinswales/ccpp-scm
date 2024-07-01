@@ -903,6 +903,29 @@ module GFS_typedefs
     integer              :: iSFC                    !< Vertical index for surface
     integer              :: iTOA                    !< Vertical index for TOA
 
+    ! COSP
+    logical              :: do_cosp                 !< If true, use COSP
+    logical              :: do_cosp_isccp           !< If true, create COSP ISCCP simulator diagnostics
+    logical              :: do_cosp_modis           !< If true, create COSP MODIS simulator diagnostics
+    logical              :: do_cosp_misr            !< If true, create COSP MISR simulator diagnostics
+    integer              :: overlap                 !< Cloud ooverlap type: 1=max, 2=rand, 3=max/rand
+    integer              :: cosp_nsubcol            !< Number of subcolumns in SCOPS, COSP internal subcolumn generator
+    integer              :: cosp_nlvgrid            !< Number of levels in COSP cloudsat/calipso statistical outputs
+    integer              :: isccp_topht
+    integer              :: isccp_topht_dir
+    integer              :: n_isccp_pres_bins       !< Number of pressure      bins in ISCCP joint-histogram (CFAD) 
+    integer              :: n_isccp_tau_bins        !< Number of optical-depth bins in ...
+    real(kind_phys)      :: isccp_pres_bins(7)      !< Pressure bin centers for ...
+    real(kind_phys)      :: isccp_tau_bins(7)       !< Optical-depth bin centers for ...
+    integer              :: n_misr_pres_bins        !< Number of pressure      bins in MISR  joint-histogram (CFAD) 
+    integer              :: n_misr_tau_bins         !< Number of optical-depth bins in ...
+    real(kind_phys)      :: misr_pres_bins(7)       !< Pressure bin centers for ...
+    real(kind_phys)      :: misr_tau_bins(7)        !< Optical-depth bin centers for ..
+    integer              :: n_modis_pres_bins       !< Number of pressure      bins in MODIS joint-histogram (CFAD) 
+    integer              :: n_modis_tau_bins        !< Number of optical-depth bins in ...
+    real(kind_phys)      :: modis_pres_bins(7)      !< Pressure bin centers for ...
+    real(kind_phys)      :: modis_tau_bins(7)       !< Optical-depth bin centers for ...
+
 !--- microphysical switch
     logical              :: convert_dry_rho = .true.       !< flag for converting mass/number concentrations from moist to dry
                                                            !< for physics options that expect dry mass/number concentrations;
@@ -2157,6 +2180,17 @@ module GFS_typedefs
     ! Auxiliary output arrays for debugging
     real (kind=kind_phys), pointer :: aux2d(:,:)  => null()    !< auxiliary 2d arrays in output (for debugging)
     real (kind=kind_phys), pointer :: aux3d(:,:,:)=> null()    !< auxiliary 2d arrays in output (for debugging)
+
+    ! COSP
+    real (kind=kind_phys), pointer :: f1isccp_cosp(:,:,:) => null()
+    real (kind=kind_phys), pointer :: cldtot_isccp(:)     => null()
+    real (kind=kind_phys), pointer :: meancldalb_isccp(:) => null()
+    real (kind=kind_phys), pointer :: meanptop_isccp(:)   => null()
+    real (kind=kind_phys), pointer :: meantau_isccp(:)    => null()
+    real (kind=kind_phys), pointer :: meantb_isccp(:)     => null()
+    real (kind=kind_phys), pointer :: meantbclr_isccp(:)  => null()
+    real (kind=kind_phys), pointer :: tau_isccp(:,:)      => null()
+    real (kind=kind_phys), pointer :: cldptop_isccp(:,:)  => null()
 
     !--- Lightning threat indices
     real (kind=kind_phys), pointer :: ltg1_max(:)        => null()  !
@@ -3464,6 +3498,45 @@ module GFS_typedefs
     integer              :: rrtmgp_lw_phys_blksz= 1          !< Number of columns for RRTMGP LW scheme to process at each instance.
     integer              :: rrtmgp_sw_phys_blksz= 1          !< Number of columns for RRTMGP SW scheme to process at each instance.
     logical              :: doGP_smearclds      = .true.     !< If true, include implicit SubGridScale clouds in RRTMGP
+
+    ! COSP
+    logical              :: do_cosp            = .false. !< If true, use COSP
+    logical              :: do_cosp_isccp      = .false. !< If true, create COSP ISCCP simulator diagnostics
+    logical              :: do_cosp_modis      = .false. !< If true, create COSP MODIS simulator diagnostics
+    logical              :: do_cosp_misr       = .false. !< If true, create COSP MISR simulator diagnostics
+    integer              :: overlap            = 3       !< Cloud ooverlap type: 1=max, 2=rand, 3=max/rand
+    integer              :: cosp_nsubcol       = 50      !< Number of subcolumns in SCOPS, COSP internal subcolumn generator
+    integer              :: cosp_nlvgrid       = 40      !< Number of levels in COSP cloudsat/calipso statistical outputs    
+    integer              :: isccp_topht        = 1       !< 1 = adjust top height using both a computed infrared
+                                                         !<     brightness temperature and the visible optical depth to adjust 
+                                                         !<     cloud top pressure. Note that this calculation is most 
+                                                         !<     appropriate to compare  to ISCCP data during sunlit hours.
+                                                         !< 2 = do not adjust top height, that is cloud top pressure
+                                                         !<     is the actual cloud top pressure in the model
+                                                         !< 3 = adjust top height using only the computed infrared
+                                                         !<     brightness temperature. Note that this calculation is most
+                                                         !<     appropriate to compare to ISCCP IR only algortihm (i.e.
+                                                         !<     you can compare to nighttime ISCCP data with this option)
+    integer              :: isccp_topht_dir    = 2       !< Direction for finding atmosphere pressure level with
+                                                         !< interpolated temperature equal to the radiance determined 
+                                                         !< cloud-top temperature
+                                                         !< 1 = find the *lowest* altitude (highest pressure) level
+                                                         !<     with interpolated temperature equal to the radiance
+                                                         !<     determined cloud-top temperature
+                                                         !< 2 = find the *highest* altitude (lowest pressure) level
+                                                         !<     with interpolated temperature equal to the radiance 
+                                                         !<     determined cloud-top temperature
+                                                         !< ONLY APPLICABLE IF top_height EQUALS 1 or 3
+                                                         !< 1 = default setting in COSP v1.1, matches all versions of
+                                                         !< ISCCP simulator with versions numbers 3.5.1 and lower
+                                                         !< 2 = default setting in COSP v1.3. default since V4.0 of ISCCP simulator
+    integer              :: n_isccp_pres_bins = 7        !< Number of pressure      bins in ISCCP joint-histogram (CFAD)
+    integer              :: n_isccp_tau_bins  = 7        !< Number of optical-depth bins in ISCCP joint-histogram (CFAD)
+    integer              :: n_misr_pres_bins  = 7        !< Number of pressure      bins in MISR  joint-histogram (CFAD)
+    integer              :: n_misr_tau_bins   = 7        !< Number of optical-depth bins in MISR  joint-histogram (CFAD)
+    integer              :: n_modis_pres_bins = 7        !< Number of pressure      bins in MODIS joint-histogram (CFAD)
+    integer              :: n_modis_tau_bins  = 7        !< Number of optical-depth bins in MODIS joint-histogram (CFAD)
+    
 !--- Z-C microphysical parameters
     integer              :: imp_physics       =  99                !< choice of cloud scheme
     real(kind=kind_phys) :: psautco(2)        = (/6.0d-4,3.0d-4/)  !< [in] auto conversion coeff from ice to snow
@@ -4012,6 +4085,9 @@ module GFS_typedefs
                                use_LW_jacobian, doGP_lwscat, damp_LW_fluxadj, lfnc_k,       &
                                lfnc_p0, iovr_convcld, doGP_sgs_cnv, doGP_sgs_mynn,          &
                                rrtmgp_lw_phys_blksz, rrtmgp_sw_phys_blksz,                  &
+                          ! --- COSP
+                               do_cosp_isccp, do_cosp_misr, do_cosp_modis, overlap,         &
+                               cosp_nsubcol, cosp_nlvgrid, isccp_topht, isccp_topht_dir,    &
                           ! IN CCN forcing
                                iccn, mraerosol,                                             &
                           !--- microphysical parameterizations
@@ -4640,7 +4716,26 @@ module GFS_typedefs
       write(0,*) "Logic error, the CCPP version of RRTMG lwrad/swrad require the output" // &
              " of the lw/sw heating rates to be turned on (namelist options lwhtr and swhtr)"
       stop
-    end if
+   end if
+
+       ! COSP
+    if (do_cosp_isccp .or. do_cosp_misr .or. do_cosp_modis) then
+       Model%do_cosp = .true.
+    endif
+    Model%do_cosp_isccp      = do_cosp_isccp
+    Model%do_cosp_misr       = do_cosp_misr
+    Model%do_cosp_modis      = do_cosp_modis
+    Model%cosp_nsubcol       = cosp_nsubcol
+    Model%cosp_nlvgrid       = cosp_nlvgrid
+    Model%overlap            = overlap
+    Model%isccp_topht        = isccp_topht
+    Model%isccp_topht_dir    = isccp_topht_dir
+    Model%n_isccp_pres_bins  = n_isccp_pres_bins
+    Model%n_isccp_tau_bins   = n_isccp_tau_bins
+    Model%n_misr_pres_bins   = n_misr_pres_bins
+    Model%n_misr_tau_bins    = n_misr_tau_bins
+    Model%n_modis_pres_bins  = n_modis_pres_bins
+    Model%n_modis_tau_bins   = n_modis_tau_bins
 
 !--- microphysical switch
     Model%imp_physics      = imp_physics
@@ -5692,14 +5787,12 @@ module GFS_typedefs
     Model%julian           = -9999.
     !--- Set vertical flag used by radiation schemes
     Model%top_at_1         = .false.
-    if (Model%do_RRTMGP) then
-       if (Model%top_at_1) then
-          Model%iSFC = Model%levs
-          Model%iTOA = 1
-       else
-          Model%iSFC = 1
-          Model%iTOA = Model%levs
-       endif
+    if (Model%top_at_1) then
+       Model%iSFC = Model%levs
+       Model%iTOA = 1
+    else
+       Model%iSFC = 1
+       Model%iTOA = Model%levs
     endif
 
 !--- BEGIN CODE FROM GFS_PHYSICS_INITIALIZE
@@ -7965,6 +8058,20 @@ module GFS_typedefs
       Diag%aux3d = clear_val
     endif
 
+    if (Model%do_cosp) then
+       if (Model%do_cosp_isccp) then
+          allocate(Diag%f1isccp_cosp(IM,Model%n_isccp_tau_bins, Model%n_isccp_pres_bins), &
+                   Diag%cldtot_isccp(IM),                                   &
+                   Diag%meancldalb_isccp(IM),                               &
+                   Diag%meanptop_isccp(IM),                                 &
+                   Diag%meantau_isccp(IM),                                  &
+                   Diag%meantb_isccp(IM),                                   &
+                   Diag%meantbclr_isccp(IM),                                &
+                   Diag%tau_isccp(IM,Model%cosp_nsubcol),                   &
+                   Diag%cldptop_isccp(IM,Model%cosp_nsubcol))
+       endif
+    endif
+
     call Diag%rad_zero  (Model)
 !    if(Model%me==0) print *,'in diag_create, call rad_zero'
     linit = .true.
@@ -8259,7 +8366,22 @@ module GFS_typedefs
        Diag%ltg2_max = zero
        Diag%ltg3_max = zero
     endif
-
+! COSP
+    if (Model%do_cosp) then
+       ! ISCCP Simulator
+       if (Model%do_cosp_isccp) then
+          Diag%f1isccp_cosp     = zero
+          Diag%cldtot_isccp     = zero
+          Diag%meancldalb_isccp = zero
+          Diag%meanptop_isccp   = zero
+          Diag%meantau_isccp    = zero
+          Diag%meantb_isccp     = zero
+          Diag%meantbclr_isccp  = zero
+          Diag%tau_isccp        = zero
+          Diag%cldptop_isccp    = zero
+       endif
+    endif
+    
   end subroutine diag_phys_zero
 
 end module GFS_typedefs

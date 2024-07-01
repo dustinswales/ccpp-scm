@@ -24,6 +24,7 @@ VARIABLE_DEFINITION_FILES = [
     'ccpp/physics/physics/Interstitials/UFS_SCM_NEPTUNE/module_ccpp_suite_simulator.F90',
     'scm/src/CCPP_typedefs.F90',
     'scm/src/GFS_typedefs.F90',
+    'ccpp/physics/physics/Diagnostics/COSP2/cosp_kinds.F90',
     'scm/src/scm_kinds.F90',
     'scm/src/scm_type_defs.F90',
     'scm/src/scm_physical_constants.F90',
@@ -215,7 +216,8 @@ SCHEME_FILES = [
     'ccpp/physics/physics/smoke_dust/rrfs_smoke_wrapper.F90',
     'ccpp/physics/physics/smoke_dust/rrfs_smoke_postpbl.F90',
     'ccpp/physics/physics/tools/get_prs_fv3.F90',
-    'ccpp/physics/physics/tools/get_phi_fv3.F90'
+    'ccpp/physics/physics/tools/get_phi_fv3.F90',
+    'ccpp/physics/physics/Diagnostics/COSP2/cosp.F90'
     ]
 
 # Default build dir, relative to current working directory,
