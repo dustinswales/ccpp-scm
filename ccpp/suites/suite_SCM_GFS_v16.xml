@@ -20,6 +20,7 @@
       <scheme>rrtmg_lw</scheme>
       <scheme>rrtmg_lw_post</scheme>
       <scheme>GFS_rrtmg_post</scheme>
+      <scheme>GFS_cosp</scheme>
     </subcycle>
   </group>
   <group name="physics">

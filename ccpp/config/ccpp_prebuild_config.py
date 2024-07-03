@@ -133,6 +133,7 @@ SCHEME_FILES = [
     'ccpp/physics/physics/Interstitials/UFS_SCM_NEPTUNE/scm_sfc_flux_spec.F90'            ,
     'ccpp/physics/physics/Interstitials/UFS_SCM_NEPTUNE/GFS_ccpp_suite_sim_pre.F90'       ,
     'ccpp/physics/physics/Interstitials/UFS_SCM_NEPTUNE/ccpp_suite_simulator.F90'         ,
+    'ccpp/physics/physics/Interstitials/UFS_SCM_NEPTUNE/GFS_cosp.F90'                     ,
 #    'ccpp/physics/physics/bl_acm.F90'                       ,
     'ccpp/physics/physics/CONV/Chikira_Sugiyama/cs_conv_pre.F90',
     'ccpp/physics/physics/CONV/Chikira_Sugiyama/cs_conv.F90',
@@ -216,8 +217,7 @@ SCHEME_FILES = [
     'ccpp/physics/physics/smoke_dust/rrfs_smoke_wrapper.F90',
     'ccpp/physics/physics/smoke_dust/rrfs_smoke_postpbl.F90',
     'ccpp/physics/physics/tools/get_prs_fv3.F90',
-    'ccpp/physics/physics/tools/get_phi_fv3.F90',
-    'ccpp/physics/physics/Diagnostics/COSP2/cosp.F90'
+    'ccpp/physics/physics/tools/get_phi_fv3.F90'
     ]
 
 # Default build dir, relative to current working directory,
