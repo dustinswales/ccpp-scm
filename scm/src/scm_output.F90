@@ -29,12 +29,13 @@ subroutine output_init(scm_state, physics)
   
   integer :: n_timesteps, n_inst, n_diag, n_swrad, n_lwrad, n_rad
   integer :: ncid, hor_dim_id, vert_dim_id, vert_dim_i_id, vert_dim_rad_id, vert_dim_soil_id, dummy_id
-  integer :: time_inst_id, time_diag_id, time_swrad_id, time_lwrad_id, time_rad_id
+  integer :: time_inst_id, time_diag_id, time_swrad_id, time_lwrad_id, time_rad_id, cosp_scol_id, cosp_scol_var_id,cosp_pbin_id, cosp_tbin_id, cosp_pbin_var_id, cosp_tbin_var_id
   integer :: year_id, month_id, day_id, hour_id, min_id, time_swrad_var_id, time_lwrad_var_id, time_rad_var_id
   character(2) :: idx
   
   real(kind=dp), dimension(scm_state%n_cols) :: missing_value_1D
   real(kind=dp), dimension(scm_state%n_cols,scm_state%n_levels) :: missing_value_2D
+  real(kind=dp), dimension(scm_state%n_cols,physics%model%n_isccp_pres_bins,physics%model%n_isccp_tau_bins) :: missing_value_3D
   
   !> \section output_init_alg Algorithm
   !! @{
@@ -92,14 +93,20 @@ subroutine output_init(scm_state, physics)
   CALL CHECK(NF90_DEF_DIM(NCID=ncid,NAME="vert_dim_interface",LEN=scm_state%n_levels+1,DIMID=vert_dim_i_id),"nf90_def_dim(vert_dim_interface)")
   CALL CHECK(NF90_DEF_DIM(NCID=ncid,NAME="vert_dim_rad",LEN=physics%Interstitial%lmk,DIMID=vert_dim_rad_id),"nf90_def_dim(vert_dim_rad)")
   CALL CHECK(NF90_DEF_DIM(NCID=ncid,NAME="vert_dim_soil",LEN=physics%Model%lsoil_lsm,DIMID=vert_dim_soil_id),"nf90_def_dim(vert_dim_soil)")
-
+  CALL CHECK(NF90_DEF_DIM(NCID=ncid,NAME="cosp_scol_dim",LEN=physics%model%cosp_nsubcol,DIMID=cosp_scol_id),"nf90_def_dim(cosp_scol)")
+  CALL CHECK(NF90_DEF_DIM(NCID=ncid,NAME="cosp_pbin_dim",LEN=physics%model%n_isccp_pres_bins,DIMID=cosp_pbin_id),"nf90_def_dim(n_isccp_pres_bins)")
+  CALL CHECK(NF90_DEF_DIM(NCID=ncid,NAME="cosp_tbin_dim",LEN=physics%model%n_isccp_tau_bins,DIMID=cosp_tbin_id),"nf90_def_dim(n_isccp_tau_bins)")
+  
   !> - Define the dimension variables.
   call NetCDF_def_var(ncid, 'time_inst', NF90_FLOAT, "model elapsed time for instantaneous variables", "s", dummy_id, (/ time_inst_id /))
   call NetCDF_def_var(ncid, 'time_diag', NF90_FLOAT, "model elapsed time for diagnostic variables", "s", dummy_id, (/ time_diag_id /))
   call NetCDF_def_var(ncid, 'time_swrad', NF90_FLOAT, "model elapsed time for shortwave radiation variables", "s", time_swrad_var_id, (/ time_swrad_id /))
   call NetCDF_def_var(ncid, 'time_lwrad', NF90_FLOAT, "model elapsed time for longwave radiation variables", "s", time_lwrad_var_id, (/ time_lwrad_id /))
   call NetCDF_def_var(ncid, 'time_rad', NF90_FLOAT, "model elapsed time for either LW or SW radiation variables", "s", time_rad_var_id, (/ time_rad_id /))
-
+  call NetCDF_def_var(ncid, 'cosp_scol', NF90_FLOAT, "number of COSP subcolumns", "1", cosp_scol_var_id, (/cosp_scol_id/))
+  call NetCDF_def_var(ncid, 'cosp_isccp_pbins', NF90_FLOAT, "number of pressure bins in COSP ISCCP CFAD", "1", cosp_pbin_var_id, (/cosp_pbin_id/))
+  call NetCDF_def_var(ncid, 'cosp_isccp_tbins', NF90_FLOAT, "number of optical-depth bins in COSP ISCCP CFAD", "1", cosp_tbin_var_id, (/cosp_tbin_id/))
+  
   !> - Define the state variables
   CALL output_init_state(ncid, time_inst_id, hor_dim_id, vert_dim_id, vert_dim_i_id)
   !> - Define the forcing variables
@@ -109,7 +116,7 @@ subroutine output_init(scm_state, physics)
   CALL output_init_sfcprop(ncid, time_inst_id, hor_dim_id, vert_dim_soil_id, scm_state, physics)
   CALL output_init_interstitial(ncid, time_inst_id, time_rad_id, hor_dim_id, vert_dim_id, vert_dim_rad_id, physics)
   CALL output_init_radtend(ncid, time_swrad_id, time_lwrad_id, hor_dim_id, vert_dim_id)
-  CALL output_init_diag(ncid, time_inst_id, time_diag_id, time_rad_id, hor_dim_id, vert_dim_id, physics)
+  CALL output_init_diag(ncid, time_inst_id, time_diag_id, time_rad_id, hor_dim_id, vert_dim_id, cosp_scol_id, cosp_pbin_id, cosp_tbin_id, physics)
   
   call NetCDF_def_var(ncid, 'init_year',   NF90_INT, "model initialization year",   "year",   year_id)
   call NetCDF_def_var(ncid, 'init_month',  NF90_INT, "model initialization month",  "month",  month_id)
@@ -143,6 +150,7 @@ subroutine output_init(scm_state, physics)
     CALL CHECK(NF90_PUT_VAR(NCID=ncid,VARID=time_rad_var_id,VALUES=0.0,START=(/ 1 /)),"nf90_put_var(time_rad_var)")
     missing_value_2D = missing_value
     missing_value_1D = missing_value
+    missing_value_3D = missing_value
     call NetCDF_put_var(ncid, "rad_cloud_fraction", missing_value_2D, 1)
     call NetCDF_put_var(ncid, "rad_cloud_lwp",      missing_value_2D, 1)
     call NetCDF_put_var(ncid, "rad_eff_rad_ql",     missing_value_2D, 1)
@@ -158,6 +166,15 @@ subroutine output_init(scm_state, physics)
     call NetCDF_put_var(ncid, 'vert_int_iwp_mp',    missing_value_1D, 1)
     call NetCDF_put_var(ncid, 'vert_int_lwp_cf',    missing_value_1D, 1)
     call NetCDF_put_var(ncid, 'vert_int_iwp_cf',    missing_value_1D, 1)
+    call NetCDF_put_var(ncid, "meanptop_isccp",     missing_value_1D, 1)
+    call NetCDF_put_var(ncid, "meantau_isccp",      missing_value_1D, 1)
+    call NetCDF_put_var(ncid, "meantb_isccp",       missing_value_1D, 1)
+    call NetCDF_put_var(ncid, "meantbclr_isccp",    missing_value_1D, 1)
+    call NetCDF_put_var(ncid, "meancldalb_isccp",   missing_value_1D, 1)
+    call NetCDF_put_var(ncid, "tau_isccp",          missing_value_2D, 1)
+    call NetCDF_put_var(ncid, "cldptop_isccp",      missing_value_2D, 1)
+!    call NetCDF_put_var(ncid, "f1isccp_cosp",       missing_value_3D, 1)
+
   end if
   
   CALL CHECK(NF90_CLOSE(NCID=ncid),"nf90_close()")
@@ -305,11 +322,11 @@ subroutine output_init_radtend(ncid, time_swrad_id, time_lwrad_id, hor_dim_id, v
   
 end subroutine output_init_radtend
 
-subroutine output_init_diag(ncid, time_inst_id, time_diag_id, time_rad_id, hor_dim_id, vert_dim_id, physics)
+subroutine output_init_diag(ncid, time_inst_id, time_diag_id, time_rad_id, hor_dim_id, vert_dim_id, cosp_scol_id, cosp_pbin_id, cosp_tbin_id, physics)
   use scm_type_defs, only: physics_type
   use NetCDF_def, only : NetCDF_def_var
   
-  integer, intent(in) :: ncid, time_inst_id, time_diag_id, time_rad_id, hor_dim_id, vert_dim_id
+  integer, intent(in) :: ncid, time_inst_id, time_diag_id, time_rad_id, hor_dim_id, vert_dim_id, cosp_scol_id, cosp_pbin_id, cosp_tbin_id
   type(physics_type), intent(in) :: physics
   
   integer :: i, dummy_id
@@ -398,7 +415,17 @@ subroutine output_init_diag(ncid, time_inst_id, time_diag_id, time_rad_id, hor_d
       write(idx,'(I2)') i
       call NetCDF_def_var(ncid, 'aux3d'//adjustl(trim(idx)), NF90_FLOAT, "generic 3-D diagnostics array with index "//adjustl(trim(idx)), "unknown", dummy_id, (/ hor_dim_id, vert_dim_id, time_inst_id /))
     end do
-  end if
+ end if
+ 
+  call NetCDF_def_var(ncid, 'meanptop_isccp',     NF90_FLOAT, "COSP ISCCP mean cloud-top pressure (radiation timesteps only)",                                "Pa",      dummy_id, (/ hor_dim_id, time_rad_id /))
+  call NetCDF_def_var(ncid, 'meantau_isccp',      NF90_FLOAT, "COSP ISCCP mean cloud optical-depth (radiation timesteps only)",                                "1",      dummy_id, (/ hor_dim_id, time_rad_id /))
+  call NetCDF_def_var(ncid, 'meantb_isccp',       NF90_FLOAT, "COSP ISCCP mean cloud-top brightness temperature (radiation timesteps only)",                   "K",      dummy_id, (/ hor_dim_id, time_rad_id /))
+  call NetCDF_def_var(ncid, 'meantbclr_isccp',    NF90_FLOAT, "COSP ISCCP mean cloud-top brightness temperature assuming clear-sky (radiation timesteps only)","K",      dummy_id, (/ hor_dim_id, time_rad_id /))
+  call NetCDF_def_var(ncid, 'meancldalb_isccp',   NF90_FLOAT, "COSP ISCCP mean cloud top albedo (radiation timesteps only)",                                   "1",      dummy_id, (/ hor_dim_id, time_rad_id /))
+  call NetCDF_def_var(ncid, 'tau_isccp',          NF90_FLOAT, "COSP ISCCP subcolumn cloud optical-depth (radiation timesteps only)",                           "1",      dummy_id, (/ hor_dim_id, cosp_scol_id, time_rad_id /))
+  call NetCDF_def_var(ncid, 'cldptop_isccp',      NF90_FLOAT, "COSP ISCCP subcolumn cloud-top pressure (radiation timesteps only)",                            "1",      dummy_id, (/ hor_dim_id, cosp_scol_id, time_rad_id /))
+!  call NetCDF_def_var(ncid, 'f1isccp_cosp',       NF90_FLOAT, "COSP ISCCP Cloud Frequency by Altitude Diagram (CFAD) (radiation timesteps only)",              "1",      dummy_id, (/ hor_dim_id, cosp_pbin_id, cosp_tbin_id, time_rad_id /))
+
   
 end subroutine output_init_diag
 
@@ -637,7 +664,15 @@ subroutine output_append_interstitial_rad(ncid, scm_state, physics)
     call NetCDF_put_var(ncid, "rad_eff_rad_qr",     physics%Interstitial%clouds(:,:,7), scm_state%itt_rad)
     call NetCDF_put_var(ncid, "rad_cloud_swp",      physics%Interstitial%clouds(:,:,8), scm_state%itt_rad)
     call NetCDF_put_var(ncid, "rad_eff_rad_qs",     physics%Interstitial%clouds(:,:,9), scm_state%itt_rad)
-
+    call NetCDF_put_var(ncid, "meanptop_isccp",     physics%Diag%meanptop_isccp,        scm_state%itt_rad)
+    call NetCDF_put_var(ncid, "meantau_isccp",      physics%Diag%meantau_isccp,         scm_state%itt_rad)
+    call NetCDF_put_var(ncid, "meantb_isccp",       physics%Diag%meantb_isccp,          scm_state%itt_rad)
+    call NetCDF_put_var(ncid, "meantbclr_isccp",    physics%Diag%meantbclr_isccp,       scm_state%itt_rad)
+    call NetCDF_put_var(ncid, "meancldalb_isccp",   physics%Diag%meancldalb_isccp,      scm_state%itt_rad)
+    call NetCDF_put_var(ncid, "tau_isccp",          physics%Diag%tau_isccp,             scm_state%itt_rad)
+    call NetCDF_put_var(ncid, "cldptop_isccp",      physics%Diag%cldptop_isccp,         scm_state%itt_rad)
+!    call NetCDF_put_var(ncid, "f1isccp",            physics%Diag%f1isccp_cosp,          scm_state%itt_rad)
+    
 end subroutine output_append_interstitial_rad
 
 subroutine output_append_radtend(ncid, scm_state, physics)
