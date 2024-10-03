@@ -76,6 +76,7 @@
     swhtr = .true.
     trans_trac = .true.
     use_ufo = .true.
+    do_cosp_isccp = .true.
 /
 
 &gfdl_cloud_microphysics_nml
