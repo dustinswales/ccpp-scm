@@ -24,7 +24,7 @@ else()
     OUTPUT_STRIP_TRAILING_WHITESPACE
     )
     set(_ccpp_suites_arg "--suites=${suite_string}")
-    message("Calling CCPP code generator (ccpp_prebuild.py) for SUPPORTED suites ${_ccpp_suites_arg} ...")
+    message("Calling CCPP code generator (ccpp_prebuild.py) for suites listed in scm/src/suite_info.py: ${_ccpp_suites_arg}.")
 endif()
 # Run CCPP prebuild.py
 message (STATUS "Running ccpp_prebuild.py for CCPP")
@@ -71,6 +71,18 @@ find_package(NetCDF REQUIRED COMPONENTS C Fortran)
 find_package(bacio REQUIRED)
 find_package(sp    REQUIRED)
 find_package(w3emc REQUIRED)
+find_package(MPI   REQUIRED)
+if(NOT MPI_Fortran_HAVE_F08_MODULE)
+  message(FATAL_ERROR "MPI_F08 Required")
+endif()
+
+find_package(MPI REQUIRED Fortran)
+if(NOT MPI_Fortran_HAVE_F08_MODULE)
+  message(FATAL_ERROR "MPI implementation does not support the Fortran 2008 mpi_f08 interface")
+endif()
+
+message(STATUS "MPI Include Path: ${MPI_INCLUDE_PATH}")
+message(STATUS "MPI Libraries: ${MPI_LIBRARIES}")
 
 SET(CCPP_FRAMEWORK_SRC ${CMAKE_SOURCE_DIR}/../../ccpp/framework)
 SET(CCPP_PHYSICS_SRC ${CMAKE_SOURCE_DIR}/../../ccpp/physics)
@@ -90,6 +102,7 @@ endif()
 
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/ccpp/framework/src)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/ccpp/physics)
+include_directories(${MPI_Fortran_INCLUDE_PATH})
 
 #------------------------------------------------------------------------------
 # Add required preprocessor flags for build type

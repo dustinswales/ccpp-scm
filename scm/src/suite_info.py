@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+import sys, os
+
+#DEFAULT_SUITE_BEHAVIOR = 'supported'
+DEFAULT_SUITE_BEHAVIOR = 'regression_test'
+
 class suite(object):
   
     DEFAULT_MAX_TIMESTEP = 1800.0
@@ -43,15 +48,15 @@ class suite(object):
       
 suite_list = []
 suite_list.append(suite('SCM_GFS_v16',           'tracers_GFS_v16.txt',                  'input_GFS_v16.nml',                 600.0, 1800.0, True ))
-suite_list.append(suite('SCM_GFS_v17_p8',        'tracers_GFS_v17_p8.txt',               'input_GFS_v17_p8.nml',              600.0, 600.0,  True ))
-suite_list.append(suite('SCM_GFS_v17_HR3',       'tracers_GFS_v17_HR3.txt',              'input_GFS_v17_HR3.nml',             600.0, 600.0,  True ))
-suite_list.append(suite('SCM_GFS_v17_HR3_RRTMGP','tracers_GFS_v17_HR3.txt',              'input_GFS_v17_HR3_RRTMGP.nml',      600.0, 600.0,  True ))
+suite_list.append(suite('SCM_GFS_v17_p8_ugwpv1', 'tracers_GFS_v17_p8_ugwpv1.txt',        'input_GFS_v17_p8_ugwpv1.nml',       600.0, 600.0,  True ))
 suite_list.append(suite('SCM_RAP',               'tracers_RAP.txt',                      'input_RAP.nml',                     600.0, 600.0 , True ))
-suite_list.append(suite('SCM_RRFS_v1',           'tracers_RRFS_v1.txt',                  'input_RRFS_v1.nml',                 600.0, 600.0 , True ))
-suite_list.append(suite('SCM_RRFS_v1beta',       'tracers_RRFS_v1beta.txt',              'input_RRFS_v1beta.nml',             600.0, 600.0 , True ))
+suite_list.append(suite('SCM_HRRR_gf',           'tracers_HRRR_gf.txt',                  'input_HRRR_gf.nml',                 600.0, 600.0 , True ))
 suite_list.append(suite('SCM_WoFS_v0',           'tracers_WoFS_v0.txt',                  'input_WoFS_v0.nml',                 600.0, 600.0 , True ))
-suite_list.append(suite('SCM_HRRR',              'tracers_HRRR.txt',                     'input_HRRR.nml',                    600.0, 600.0 , True ))
+suite_list.append(suite('SCM_GFS_v16_RRTMGP',    'tracers_GFS_v16.txt',                  'input_GFS_v16_RRTMGP.nml',          600.0, 1800.0, True ))
 
+suite_list.append(suite('SCM_GFS_v17_p8',        'tracers_GFS_v17_p8.txt',               'input_GFS_v17_p8.nml',              600.0, 600.0,  False))
+suite_list.append(suite('SCM_HRRR',              'tracers_HRRR.txt',                     'input_HRRR.nml',                    600.0, 600.0 , False))
+suite_list.append(suite('SCM_RRFS_v1beta',       'tracers_RRFS_v1beta.txt',              'input_RRFS_v1beta.nml',             600.0, 600.0 , False))
 suite_list.append(suite('SCM_GFS_v15p2',         'tracers_GFS_v15p2.txt',                'input_GFS_v15p2.nml',               600.0, 1800.0, False))
 suite_list.append(suite('SCM_GFS_v15p2_RRTMGP',  'tracers_GFS_v15p2.txt',                'input_GFS_v15p2_RRTMGP.nml',        600.0, 1800.0, False))
 suite_list.append(suite('SCM_GFS_v15p2_no_nsst', 'tracers_GFS_v15p2.txt',                'input_GFS_v15p2.nml',               600.0, 1800.0, False))
@@ -60,7 +65,6 @@ suite_list.append(suite('SCM_GFS_v15p2_MYJ',     'tracers_GFS_v15p2.txt',       
 suite_list.append(suite('SCM_GFS_v15p2_YSU',     'tracers_GFS_v15p2.txt',                'input_GFS_v15p2_YSU.nml',           600.0, 1800.0, False))
 suite_list.append(suite('SCM_GFS_v15p2_saYSU',   'tracers_GFS_v15p2.txt',                'input_GFS_v15p2_saYSU.nml',         600.0, 1800.0, False))
 suite_list.append(suite('SCM_GFS_v15p2_ACM',     'tracers_GFS_v15p2.txt',                'input_GFS_v15p2_ACM.nml',           600.0, 1800.0, False))
-suite_list.append(suite('SCM_GFS_v16_RRTMGP',    'tracers_GFS_v16.txt',                  'input_GFS_v16_RRTMGP.nml',          600.0, 1800.0, False))
 suite_list.append(suite('SCM_GFS_v16_no_nsst',   'tracers_GFS_v16.txt',                  'input_GFS_v16.nml',                 600.0, 1800.0, False))
 suite_list.append(suite('HAFS_v0_hwrf',          'tracers_HAFS_v0_hwrf.txt',             'input_HAFS_v0_hwrf.nml',            600.0, 1800.0, False))
 suite_list.append(suite('HAFS_v0_hwrf_thompson', 'tracers_HAFS_v0_hwrf_thompson.txt',    'input_HAFS_v0_hwrf_thompson.nml',   600.0, 600.0 , False))
@@ -73,9 +77,34 @@ def main():
     
     #print supported suites separated by commas
     suite_string = ''
-    for s in suite_list:
-        if s._supported:
-            suite_string += s._name + ',' + s._name + '_ps' + ','  
+    
+    if DEFAULT_SUITE_BEHAVIOR == 'regression_test':
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        sys.path.insert(1, dir_path + '/../../test/')
+        
+        rt_suite_list = []
+        
+        import rt_test_cases
+        import rt_test_cases_sp
+        import rt_test_cases_nvidia
+        
+        for item in rt_test_cases.run_list:
+            rt_suite_list.append(item.get("suite"))
+        
+        for item in rt_test_cases_sp.run_list:
+            rt_suite_list.append(item.get("suite"))
+        
+        for item in rt_test_cases_nvidia.run_list:
+            rt_suite_list.append(item.get("suite"))
+        
+        unique_suite_list = list(set(rt_suite_list))
+        
+        for s in unique_suite_list:    
+            suite_string += s + ',' + s + '_ps' + ','
+    else:
+        for s in suite_list:
+            if s._supported:
+                suite_string += s._name + ',' + s._name + '_ps' + ','  
     print(suite_string[:-1])
 
 if __name__ == '__main__':
