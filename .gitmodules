@@ -4,8 +4,8 @@
 	branch = main
 [submodule "ccpp-physics"]
 	path = ccpp/physics
-	url = https://github.com/ihursmas/ccpp-physics
-	branch = pumas
+	url = https://github.com/dustinswales/ccpp-physics
+	branch = feature/pumas-djs
 [submodule "CMakeModules"]
 	path = CMakeModules
 	url = https://github.com/noaa-emc/CMakeModules
