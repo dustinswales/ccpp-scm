@@ -304,6 +304,7 @@ module CCPP_typedefs
     real (kind=kind_phys), pointer      :: micro_frac_ice(:,:) => null()
     real (kind=kind_phys), pointer      :: micro_frac_cldliq_tend(:,:) => null()
     real (kind=kind_phys), pointer      :: micro_rain_evap(:,:) => null()
+    type(proc_rates_type)               :: micro_proc_rates 
 !- pumas
     integer,               pointer      :: mtopa(:,:)         => null()  !<
     integer                             :: nbdlw                         !<
@@ -337,9 +338,6 @@ module CCPP_typedefs
     real (kind=kind_phys), pointer      :: plyr(:,:)          => null()  !<
     real (kind=kind_phys), pointer      :: prcpmp(:)          => null()  !<
     real (kind=kind_phys), pointer      :: prnum(:,:)         => null()  !<
-!+ pumas
-    type (proc_rates_type), pointer     :: micro_proc_rates 
-!- pumas
     real (kind=kind_phys), pointer      :: q2mp(:)            => null()  !<
     real (kind=kind_phys), pointer      :: qgl(:,:)           => null()  !<
     real (kind=kind_phys), pointer      :: qicn(:,:)          => null()  !<
@@ -539,6 +537,8 @@ contains
     integer,                intent(in) :: IM
     type(GFS_control_type), intent(in) :: Model
     integer                            :: iGas
+    character(len=16) :: warm_rain=''
+    character(128)    :: errstring=''
     !
     allocate (Interstitial%otspt      (Model%ntracp1,2))
     allocate (Interstitial%otsptflag  (Model%ntrac))
@@ -791,6 +791,7 @@ contains
     allocate (Interstitial%micro_frac_ice(IM,Model%micro_nlev))
     allocate (Interstitial%micro_frac_cldliq_tend(IM,Model%micro_nlev))
     allocate (Interstitial%micro_rain_evap(IM,Model%micro_nlev))
+    call Interstitial%micro_proc_rates%allocate(IM,Model%micro_nlev,Model%ntrac,warm_rain,errstring)
 !- pumas
     allocate (Interstitial%mtopa           (IM,3))
     allocate (Interstitial%oa4             (IM,4))
