@@ -55,6 +55,12 @@ jobs:
       run: |
         pip install f90nml h5py netCDF4 matplotlib
 
+    - name: Download SCM RTs.
+      uses: actions/download-artifact@v4
+      with:
+        name: rt-baselines-${{matrix.build-type}}
+        path: ${{env.dir_bl}}
+
     - name: Environment for openmpi compiler
       run: |
         echo "FC=mpif90" >> $GITHUB_ENV
@@ -180,10 +186,11 @@ jobs:
     - name: Create directory for SCM RT baselines
       run: mkdir ${dir_bl}
 
-    - uses: actions/download-artifact@v4
-      with:
-        name: rt-baselines-${{matrix.build-type}}
-        path: ${{env.dir_bl}}
+#    - name: Download SCM RTs.
+#      uses: actions/download-artifact@v4
+#      with:
+#        name: rt-baselines-${{matrix.build-type}}
+#        path: ${{env.dir_bl}}
 
     - name: Display structure of downloaded files
       run: ls -R ${{env.dir_bl}}
