@@ -31,9 +31,8 @@ jobs:
 
     # Workflow steps
     steps:
-    - name: Download SCM RTs.
-      uses: actions/download-artifact@v4
-        name: rt-baselines-${{matrix.build-type}}
+    - uses: actions/download-artifact@v4
+      name: rt-baselines-${{matrix.build-type}}
 
     # Install System Dependencies
     - name: Install System Dependencies
