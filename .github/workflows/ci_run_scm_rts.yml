@@ -180,22 +180,19 @@ jobs:
     - name: Create directory for SCM RT baselines
       run: mkdir ${dir_bl}
 
-    - uses: actions/download-artifact@v5
-      with:
-        name: rt-baselines-${{matrix.build-type}}
-        path: ${{env.dir_bl}}
+#    - uses: actions/download-artifact@v5
+#      with:
+#        name: rt-baselines-${{matrix.build-type}}
+#        path: ${{env.dir_bl}}
 
     - name: Display structure of downloaded files
       run: ls -R ${{env.dir_bl}}
 
-#    - name: Create directory for SCM RT baselines
-#      run: mkdir ${dir_bl}
-#
-#    - name: Download SCM RT baselines
-#      run: |
-#        cd ${dir_bl}
-#        wget https://dtcenter.ucar.edu/ccpp/rt/rt-baselines-${{matrix.build-type}}.zip
-#        unzip rt-baselines-${{matrix.build-type}}.zip
+    - name: Download SCM RT baselines
+      run: |
+        cd ${dir_bl}
+        wget https://dtcenter.ucar.edu/ccpp/rt/rt-baselines-${{matrix.build-type}}.zip
+        unzip rt-baselines-${{matrix.build-type}}.zip
 
     - name: Compare SCM RT output to baselines
       run: |
@@ -213,13 +210,13 @@ jobs:
 
     - name: Upload plots of SCM Baselines/RTs as GitHub Artifact.
       if: env.files_exist == 'true'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: rt-plots-${{matrix.build-type}}
         path: /home/runner/work/ccpp-scm/ccpp-scm/test/scm_rt_out
 
     - name: Upload SCM RTs as GitHub Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: rt-baselines-${{matrix.build-type}}
         path: /home/runner/work/ccpp-scm/ccpp-scm/test/artifact-${{matrix.build-type}}
