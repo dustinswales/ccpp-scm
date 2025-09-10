@@ -45,6 +45,12 @@ jobs:
         openmpi-bin \
         libopenmpi-dev
 
+    - name: Download SCM RTs.
+      uses: actions/download-artifact@v4
+      with:
+        name: rt-baselines-${{matrix.build-type}}
+        path: ${{env.dir_bl}}
+
     # Python setup
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -54,12 +60,6 @@ jobs:
     - name: Install NetCDF Python libraries
       run: |
         pip install f90nml h5py netCDF4 matplotlib
-
-    - name: Download SCM RTs.
-      uses: actions/download-artifact@v4
-      with:
-        name: rt-baselines-${{matrix.build-type}}
-        path: ${{env.dir_bl}}
 
     - name: Environment for openmpi compiler
       run: |
