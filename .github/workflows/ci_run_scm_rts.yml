@@ -180,10 +180,10 @@ jobs:
     - name: Create directory for SCM RT baselines
       run: mkdir ${dir_bl}
 
-#    - uses: actions/download-artifact@v5
-#      with:
-#        name: rt-baselines-${{matrix.build-type}}
-#        path: ${{env.dir_bl}}
+    - uses: actions/download-artifact@v4
+      with:
+        name: rt-baselines-${{matrix.build-type}}
+        path: ${{env.dir_bl}}
 
     - name: Display structure of downloaded files
       run: ls -R ${{env.dir_bl}}
