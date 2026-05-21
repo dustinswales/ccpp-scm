@@ -51,15 +51,6 @@ module GFS_typedefs
   real(kind=kind_phys), parameter :: cn_th     = 1000._kind_phys
   real(kind=kind_phys), parameter :: cn_hr     = 3600._kind_phys
 
-  ! optional extra top layer on top of low ceiling models
-  ! this parameter was originally defined in the radiation driver
-  ! (and is still for standard non-CCPP builds), but is required
-  ! here for CCPP to allocate arrays used for the interstitial
-  ! calculations previously in GFS_{physics,radiation}_driver.F90
-  ! LTP=0: no extra top layer
-  integer, parameter :: LTP = 0   ! no extra top layer
-  !integer, parameter :: LTP = 1   ! add an extra top layer
-
 !----------------
 ! Data Containers
 !----------------
@@ -837,8 +828,6 @@ module GFS_typedefs
     integer              :: nhfrad          !< number of timesteps for which to call radiation on physics timestep (coldstarts)
     integer              :: levr            !< number of vertical levels for radiation calculations
     integer              :: levrp1          !< number of vertical levels for radiation calculations plus one
-    integer              :: lmk
-    integer              :: lmp
     integer              :: nbdlw
     integer              :: nbdsw
     integer              :: NF_AESW
@@ -920,7 +909,6 @@ module GFS_typedefs
     integer              :: ipsdlim         !< limit initial permutation seed for mcica radiation
     logical              :: lrseeds         !< flag to use host-provided random seeds
     integer              :: nrstreams       !< number of random number streams in host-provided random seed array
-    logical              :: lextop          !< flag for using an extra top layer for radiation
     real(kind_phys)      :: xr_con          !< Xu-Randall cloud fraction multiplicative constant
     real(kind_phys)      :: xr_exp          !< Xu-Randall cloud fraction exponent constant
 
@@ -3627,7 +3615,6 @@ module GFS_typedefs
     integer              :: ipsdlim           = 1e8          !< limit initial permutation seed for mcica radiation
     logical              :: lrseeds           = .false.      !< flag to use host-provided random seeds
     integer              :: nrstreams         = 2            !< number of random number streams in host-provided random seed array
-    logical              :: lextop            = .false.      !< flag for using an extra top layer for radiation
     real(kind_phys)      :: xr_con            = -999.0       !< Xu-Randall cloud fraction multiplicative constant
     real(kind_phys)      :: xr_exp            = -999.0       !< Xu-Randall cloud fraction exponent constant
     ! RRTMGP
@@ -4822,8 +4809,6 @@ module GFS_typedefs
       Model%levr           = levr
     endif
     Model%levrp1           = Model%levr + 1
-    Model%lmk              = Model%levr + LTP
-    Model%lmp              = Model%levr + 1 + LTP
     Model%nbdlw            = NBDLW
     Model%nbdsw            = NBDSW
     Model%NF_AESW          = 3
@@ -4909,7 +4894,6 @@ module GFS_typedefs
     Model%ipsdlim          = ipsdlim
     Model%lrseeds          = lrseeds
     Model%nrstreams        = nrstreams
-    Model%lextop           = (ltp > 0)
     ! RRTMGP
     Model%do_RRTMGP           = do_RRTMGP
     Model%rrtmgp_nrghice      = rrtmgp_nrghice
@@ -7092,7 +7076,6 @@ module GFS_typedefs
       print *, ' ipsdlim           : ', Model%ipsdlim
       print *, ' lrseeds           : ', Model%lrseeds
       print *, ' nrstreams         : ', Model%nrstreams
-      print *, ' lextop            : ', Model%lextop
       print *, ' xr_con            : ', Model%xr_con
       print *, ' xr_exp            : ', Model%xr_exp
       if (Model%do_RRTMGP) then
@@ -8304,7 +8287,7 @@ module GFS_typedefs
     if (Model%imp_physics == Model%imp_physics_fer_hires) then
      allocate (Diag%train     (IM,Model%levs))
     end if
-    allocate (Diag%cldfra     (IM,Model%levr+LTP))
+    allocate (Diag%cldfra     (IM,Model%levr))
     allocate (Diag%cldfra2d   (IM))
     allocate (Diag%total_albedo (IM))
     allocate (Diag%lwp_ex (IM))

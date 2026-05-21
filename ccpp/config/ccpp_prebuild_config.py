@@ -139,7 +139,7 @@ SCHEME_FILES = [
     'ccpp/physics/physics/Interstitials/UFS_SCM_NEPTUNE/GFS_surface_loop_control_part2.F90' ,
     'ccpp/physics/physics/Interstitials/UFS_SCM_NEPTUNE/GFS_time_vary_pre.scm.F90'        ,
     'ccpp/physics/physics/Interstitials/UFS_SCM_NEPTUNE/cnvc90.f'                         ,
-    'ccpp/physics/physics/Interstitials/UFS_SCM_NEPTUNE/dcyc2t3.f'                        ,
+    'ccpp/physics/physics/Interstitials/UFS_SCM_NEPTUNE/GFS_rad_to_phys.F90'              ,
     'ccpp/physics/physics/Interstitials/UFS_SCM_NEPTUNE/maximum_hourly_diagnostics.F90'   ,
     'ccpp/physics/physics/Interstitials/UFS_SCM_NEPTUNE/GFS_physics_post.F90'             ,
     'ccpp/physics/physics/Interstitials/UFS_SCM_NEPTUNE/sgscloud_radpre.F90'              ,

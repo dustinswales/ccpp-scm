@@ -29,7 +29,7 @@
       <scheme>GFS_suite_interstitial_1</scheme>
       <scheme>GFS_surface_generic_pre</scheme>
       <scheme>scm_sfc_flux_spec</scheme>
-      <scheme>dcyc2t3</scheme>
+      <scheme>GFS_rad_to_phys</scheme>
       <scheme>GFS_suite_interstitial_2</scheme>
       <scheme>GFS_PBL_generic_pre</scheme>
       <scheme>satmedmfvdifq</scheme>

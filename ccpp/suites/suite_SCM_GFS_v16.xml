@@ -28,7 +28,7 @@
       <scheme>GFS_suite_interstitial_1</scheme>
       <scheme>GFS_surface_generic_pre</scheme>
       <scheme>GFS_surface_composites_pre</scheme>
-      <scheme>dcyc2t3</scheme>
+      <scheme>GFS_rad_to_phys</scheme>
       <scheme>GFS_surface_composites_inter</scheme>
       <scheme>GFS_suite_interstitial_2</scheme>
     </subcycle>

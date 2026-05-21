@@ -3979,18 +3979,6 @@
   units = count
   dimensions = ()
   type = integer
-[lmk]
-  standard_name = adjusted_vertical_layer_dimension_for_radiation
-  long_name = adjusted number of vertical layers for radiation
-  units = count
-  dimensions = ()
-  type = integer
-[lmp]
-  standard_name = adjusted_vertical_level_dimension_for_radiation
-  long_name = adjusted number of vertical levels for radiation
-  units = count
-  dimensions = ()
-  type = integer
 [nbdlw]
   standard_name = number_of_aerosol_bands_for_longwave_radiation
   long_name = number of aerosol bands for longwave radiation
@@ -10059,7 +10047,7 @@
   standard_name = instantaneous_3d_cloud_fraction
   long_name = instantaneous 3D cloud fraction for all MPs
   units = frac
-  dimensions = (horizontal_dimension,adjusted_vertical_layer_dimension_for_radiation)
+  dimensions = (horizontal_dimension,vertical_layer_dimension)
   type = real
   kind = kind_phys
 [cldfra2d]
@@ -10802,9 +10790,3 @@
   units = DDT
   dimensions = ()
   type = GFS_tbd_type
-[LTP]
-  standard_name = extra_top_layer
-  long_name = extra top layer for radiation
-  units = count
-  dimensions = ()
-  type = integer

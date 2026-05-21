@@ -8,7 +8,7 @@ module CCPP_typedefs
     use machine,  only: kind_grid, kind_dyn, kind_phys
 
     ! Constants/dimensions needed for interstitial DDTs
-    use GFS_typedefs,             only: clear_val, LTP
+    use GFS_typedefs,             only: clear_val
 
     ! Physics type defininitions needed for interstitial DDTs
     use module_radsw_parameters,  only: profsw_type, cmpfsw_type
@@ -432,7 +432,7 @@ contains
     allocate (Interstitial%alb1d           (ixs:ixe))
     if (.not. Model%do_RRTMGP) then
       ! RRTMGP uses its own cloud_overlap_param
-      allocate (Interstitial%alpha         (ixs:ixe,Model%levr+LTP))
+      allocate (Interstitial%alpha         (ixs:ixe,Model%levr))
     end if
     allocate (Interstitial%bexp1d          (ixs:ixe))
     allocate (Interstitial%cd              (ixs:ixe))
@@ -448,10 +448,10 @@ contains
     allocate (Interstitial%chh_water       (ixs:ixe))
     allocate (Interstitial%cldf            (ixs:ixe))
     allocate (Interstitial%cldsa           (ixs:ixe,5))
-    allocate (Interstitial%cldtaulw        (ixs:ixe,Model%levr+LTP))
-    allocate (Interstitial%cldtausw        (ixs:ixe,Model%levr+LTP))
+    allocate (Interstitial%cldtaulw        (ixs:ixe,Model%levr))
+    allocate (Interstitial%cldtausw        (ixs:ixe,Model%levr))
     allocate (Interstitial%cld1d           (ixs:ixe))
-    allocate (Interstitial%clouds          (ixs:ixe,Model%levr+LTP,NF_CLDS))
+    allocate (Interstitial%clouds          (ixs:ixe,Model%levr,NF_CLDS))
     allocate (Interstitial%clw             (ixs:ixe,Model%levs,Interstitial%nn))
     allocate (Interstitial%clx             (ixs:ixe,4))
     allocate (Interstitial%cmm_ice         (ixs:ixe))
@@ -465,7 +465,7 @@ contains
     allocate (Interstitial%de_lgth         (ixs:ixe))
     allocate (Interstitial%del             (ixs:ixe,Model%levs))
     allocate (Interstitial%del_gz          (ixs:ixe,Model%levs+1))
-    allocate (Interstitial%delr            (ixs:ixe,Model%levr+LTP))
+    allocate (Interstitial%delr            (ixs:ixe,Model%levr))
     allocate (Interstitial%dlength         (ixs:ixe))
     allocate (Interstitial%dqdt            (ixs:ixe,Model%levs,Model%ntrac))
     allocate (Interstitial%dqsfc1          (ixs:ixe))
@@ -481,7 +481,7 @@ contains
     allocate (Interstitial%dvsfcg          (ixs:ixe))
     allocate (Interstitial%dvsfc1          (ixs:ixe))
     allocate (Interstitial%dvdftra         (ixs:ixe,Model%levs,Interstitial%nvdiff))
-    allocate (Interstitial%dzlyr           (ixs:ixe,Model%levr+LTP))
+    allocate (Interstitial%dzlyr           (ixs:ixe,Model%levr))
     allocate (Interstitial%elvmax          (ixs:ixe))
     allocate (Interstitial%ep1d            (ixs:ixe))
     allocate (Interstitial%ep1d_ice        (ixs:ixe))
@@ -496,8 +496,8 @@ contains
     allocate (Interstitial%ecan            (ixs:ixe))
     allocate (Interstitial%etran           (ixs:ixe))
     allocate (Interstitial%edir            (ixs:ixe))
-    allocate (Interstitial%faerlw          (ixs:ixe,Model%levr+LTP,Model%NBDLW,Model%NF_AELW))
-    allocate (Interstitial%faersw          (ixs:ixe,Model%levr+LTP,Model%NBDSW,Model%NF_AESW))
+    allocate (Interstitial%faerlw          (ixs:ixe,Model%levr,Model%NBDLW,Model%NF_AELW))
+    allocate (Interstitial%faersw          (ixs:ixe,Model%levr,Model%NBDSW,Model%NF_AESW))
     allocate (Interstitial%ffhh_ice        (ixs:ixe))
     allocate (Interstitial%ffhh_land       (ixs:ixe))
     allocate (Interstitial%ffhh_water      (ixs:ixe))
@@ -526,7 +526,7 @@ contains
     allocate (Interstitial%gamma           (ixs:ixe))
     allocate (Interstitial%gamq            (ixs:ixe))
     allocate (Interstitial%gamt            (ixs:ixe))
-    allocate (Interstitial%gasvmr          (ixs:ixe,Model%levr+LTP,NF_VGAS))
+    allocate (Interstitial%gasvmr          (ixs:ixe,Model%levr,NF_VGAS))
     allocate (Interstitial%gflx            (ixs:ixe))
     allocate (Interstitial%gflx_ice        (ixs:ixe))
     allocate (Interstitial%gflx_land       (ixs:ixe))
@@ -539,10 +539,10 @@ contains
     allocate (Interstitial%hflx_ice        (ixs:ixe))
     allocate (Interstitial%hflx_land       (ixs:ixe))
     allocate (Interstitial%hflx_water      (ixs:ixe))
-    allocate (Interstitial%htlwc           (ixs:ixe,Model%levr+LTP))
-    allocate (Interstitial%htlw0           (ixs:ixe,Model%levr+LTP))
-    allocate (Interstitial%htswc           (ixs:ixe,Model%levr+LTP))
-    allocate (Interstitial%htsw0           (ixs:ixe,Model%levr+LTP))
+    allocate (Interstitial%htlwc           (ixs:ixe,Model%levr))
+    allocate (Interstitial%htlw0           (ixs:ixe,Model%levr))
+    allocate (Interstitial%htswc           (ixs:ixe,Model%levr))
+    allocate (Interstitial%htsw0           (ixs:ixe,Model%levr))
     allocate (Interstitial%dry             (ixs:ixe))
     allocate (Interstitial%idxday          (ixs:ixe))
     allocate (Interstitial%icy             (ixs:ixe))
@@ -560,11 +560,11 @@ contains
     allocate (Interstitial%mtopa           (ixs:ixe,3))
     allocate (Interstitial%oa4             (ixs:ixe,4))
     allocate (Interstitial%oc              (ixs:ixe))
-    allocate (Interstitial%olyr            (ixs:ixe,Model%levr+LTP))
-    allocate (Interstitial%plvl            (ixs:ixe,Model%levr+1+LTP))
-    allocate (Interstitial%plyr            (ixs:ixe,Model%levr+LTP))
+    allocate (Interstitial%olyr            (ixs:ixe,Model%levr))
+    allocate (Interstitial%plvl            (ixs:ixe,Model%levr+1))
+    allocate (Interstitial%plyr            (ixs:ixe,Model%levr))
     allocate (Interstitial%prnum           (ixs:ixe,Model%levs))
-    allocate (Interstitial%qlyr            (ixs:ixe,Model%levr+LTP))
+    allocate (Interstitial%qlyr            (ixs:ixe,Model%levr))
     allocate (Interstitial%prcpmp          (ixs:ixe))
     allocate (Interstitial%qss_ice         (ixs:ixe))
     allocate (Interstitial%qss_land        (ixs:ixe))
@@ -600,8 +600,8 @@ contains
     allocate (Interstitial%stress_water    (ixs:ixe))
     allocate (Interstitial%theta           (ixs:ixe))
     allocate (Interstitial%tkeh            (ixs:ixe,Model%levs+1)) !Vertical turbulent kinetic energy at model layer interfaces
-    allocate (Interstitial%tlvl            (ixs:ixe,Model%levr+1+LTP))
-    allocate (Interstitial%tlyr            (ixs:ixe,Model%levr+LTP))
+    allocate (Interstitial%tlvl            (ixs:ixe,Model%levr+1))
+    allocate (Interstitial%tlyr            (ixs:ixe,Model%levr))
     allocate (Interstitial%tprcp_ice       (ixs:ixe))
     allocate (Interstitial%tprcp_land      (ixs:ixe))
     allocate (Interstitial%tprcp_water     (ixs:ixe))
