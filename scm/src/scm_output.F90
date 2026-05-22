@@ -28,7 +28,7 @@ subroutine output_init(scm_state, physics)
   type(physics_type),   intent(in) :: physics
   
   integer :: n_timesteps, n_inst, n_diag, n_swrad, n_lwrad, n_rad
-  integer :: ncid, hor_dim_id, vert_dim_id, vert_dim_i_id, vert_dim_rad_id, vert_dim_soil_id, dummy_id
+  integer :: ncid, hor_dim_id, vert_dim_id, vert_dim_i_id, vert_dim_soil_id, dummy_id
   integer :: time_inst_id, time_diag_id, time_swrad_id, time_lwrad_id, time_rad_id
   integer :: year_id, month_id, day_id, hour_id, min_id, time_swrad_var_id, time_lwrad_var_id, time_rad_var_id
   character(2) :: idx
@@ -106,7 +106,7 @@ subroutine output_init(scm_state, physics)
   
   !> - Define all diagnostic/physics variables
   CALL output_init_sfcprop(ncid, time_inst_id, hor_dim_id, vert_dim_soil_id, scm_state, physics)
-  CALL output_init_interstitial(ncid, time_inst_id, time_rad_id, hor_dim_id, vert_dim_id, vert_dim_rad_id, physics)
+  CALL output_init_interstitial(ncid, time_inst_id, time_rad_id, hor_dim_id, vert_dim_id, physics)
   CALL output_init_radtend(ncid, time_swrad_id, time_lwrad_id, hor_dim_id, vert_dim_id)
   CALL output_init_diag(ncid, time_inst_id, time_diag_id, time_rad_id, hor_dim_id, vert_dim_id, physics)
   
@@ -254,11 +254,11 @@ subroutine output_init_sfcprop(ncid, time_inst_id, hor_dim_id, vert_dim_soil_id,
   
 end subroutine output_init_sfcprop
 
-subroutine output_init_interstitial(ncid, time_inst_id, time_rad_id, hor_dim_id, vert_dim_id, vert_dim_rad_id, physics)
+subroutine output_init_interstitial(ncid, time_inst_id, time_rad_id, hor_dim_id, vert_dim_id, physics)
   use scm_type_defs, only: physics_type
   use NetCDF_def, only : NetCDF_def_var
   
-  integer, intent(in) :: ncid, time_inst_id, time_rad_id, hor_dim_id, vert_dim_id, vert_dim_rad_id
+  integer, intent(in) :: ncid, time_inst_id, time_rad_id, hor_dim_id, vert_dim_id
   type(physics_type), intent(in) :: physics
   
   integer :: dummy_id
@@ -287,15 +287,15 @@ subroutine output_init_interstitial(ncid, time_inst_id, time_rad_id, hor_dim_id,
   call NetCDF_def_var(ncid, 'dcnv_prcp_inst', NF90_FLOAT, "instantaneous surface liquid water equivalent thickness of total precipitation from deep convection scheme",    "m", dummy_id, (/ hor_dim_id, time_inst_id /))
   call NetCDF_def_var(ncid, 'scnv_prcp_inst', NF90_FLOAT, "instantaneous surface liquid water equivalent thickness of total precipitation from shallow convection scheme", "m", dummy_id, (/ hor_dim_id, time_inst_id /))
   
-  call NetCDF_def_var(ncid, 'rad_cloud_fraction', NF90_FLOAT, "instantaneous cloud fraction used in radiation (radiation timesteps only)",                   "fraction", dummy_id, (/ hor_dim_id, vert_dim_rad_id, time_rad_id /))
-  call NetCDF_def_var(ncid, 'rad_cloud_lwp',      NF90_FLOAT, "instantaneous cloud liquid water path used in radiation (radiation timesteps only)",          "g m-2",    dummy_id, (/ hor_dim_id, vert_dim_rad_id, time_rad_id /))
-  call NetCDF_def_var(ncid, 'rad_eff_rad_ql',     NF90_FLOAT, "instantaneous effective radius for liquid cloud used in radiation (radiation timesteps only)", "um",      dummy_id, (/ hor_dim_id, vert_dim_rad_id, time_rad_id /))
-  call NetCDF_def_var(ncid, 'rad_cloud_iwp',      NF90_FLOAT, "instantaneous cloud ice water path used in radiation (radiation timesteps only)",              "g m-2",   dummy_id, (/ hor_dim_id, vert_dim_rad_id, time_rad_id /))
-  call NetCDF_def_var(ncid, 'rad_eff_rad_qi',     NF90_FLOAT, "instantaneous effective radius for ice cloud used in radiation (radiation timesteps only)",    "um",      dummy_id, (/ hor_dim_id, vert_dim_rad_id, time_rad_id /))
-  call NetCDF_def_var(ncid, 'rad_cloud_rwp',      NF90_FLOAT, "instantaneous rain water path used in radiation (radiation timesteps only)",                   "g m-2",   dummy_id, (/ hor_dim_id, vert_dim_rad_id, time_rad_id /))
-  call NetCDF_def_var(ncid, 'rad_eff_rad_qr',     NF90_FLOAT, "instantaneous effective radius for raindrop used in radiation (radiation timesteps only)",     "um",      dummy_id, (/ hor_dim_id, vert_dim_rad_id, time_rad_id /))
-  call NetCDF_def_var(ncid, 'rad_cloud_swp',      NF90_FLOAT, "instantaneous snow water path used in radiation (radiation timesteps only)",                   "g m-2",   dummy_id, (/ hor_dim_id, vert_dim_rad_id, time_rad_id /))
-  call NetCDF_def_var(ncid, 'rad_eff_rad_qs',     NF90_FLOAT, "instantaneous effective radius for snowflake in radiation (radiation timesteps only)",         "um",      dummy_id, (/ hor_dim_id, vert_dim_rad_id, time_rad_id /))
+  call NetCDF_def_var(ncid, 'rad_cloud_fraction', NF90_FLOAT, "instantaneous cloud fraction used in radiation (radiation timesteps only)",                   "fraction", dummy_id, (/ hor_dim_id, vert_dim_id, time_rad_id /))
+  call NetCDF_def_var(ncid, 'rad_cloud_lwp',      NF90_FLOAT, "instantaneous cloud liquid water path used in radiation (radiation timesteps only)",          "g m-2",    dummy_id, (/ hor_dim_id, vert_dim_id, time_rad_id /))
+  call NetCDF_def_var(ncid, 'rad_eff_rad_ql',     NF90_FLOAT, "instantaneous effective radius for liquid cloud used in radiation (radiation timesteps only)", "um",      dummy_id, (/ hor_dim_id, vert_dim_id, time_rad_id /))
+  call NetCDF_def_var(ncid, 'rad_cloud_iwp',      NF90_FLOAT, "instantaneous cloud ice water path used in radiation (radiation timesteps only)",              "g m-2",   dummy_id, (/ hor_dim_id, vert_dim_id, time_rad_id /))
+  call NetCDF_def_var(ncid, 'rad_eff_rad_qi',     NF90_FLOAT, "instantaneous effective radius for ice cloud used in radiation (radiation timesteps only)",    "um",      dummy_id, (/ hor_dim_id, vert_dim_id, time_rad_id /))
+  call NetCDF_def_var(ncid, 'rad_cloud_rwp',      NF90_FLOAT, "instantaneous rain water path used in radiation (radiation timesteps only)",                   "g m-2",   dummy_id, (/ hor_dim_id, vert_dim_id, time_rad_id /))
+  call NetCDF_def_var(ncid, 'rad_eff_rad_qr',     NF90_FLOAT, "instantaneous effective radius for raindrop used in radiation (radiation timesteps only)",     "um",      dummy_id, (/ hor_dim_id, vert_dim_id, time_rad_id /))
+  call NetCDF_def_var(ncid, 'rad_cloud_swp',      NF90_FLOAT, "instantaneous snow water path used in radiation (radiation timesteps only)",                   "g m-2",   dummy_id, (/ hor_dim_id, vert_dim_id, time_rad_id /))
+  call NetCDF_def_var(ncid, 'rad_eff_rad_qs',     NF90_FLOAT, "instantaneous effective radius for snowflake in radiation (radiation timesteps only)",         "um",      dummy_id, (/ hor_dim_id, vert_dim_id, time_rad_id /))
   
 end subroutine output_init_interstitial
 
