@@ -2,20 +2,20 @@ name: Build/run the CCPP-SCM, compare to existing baselines (GitHub artifact)
 
 on:
   push:
-#    branches:
-#      # Only build and run when pushing to main
-#      - main
+    branches:
+      # Only build and run when pushing to main
+      - main
   pull_request:
   workflow_dispatch:
 
 jobs:
   run_scm_rts:
     runs-on: ubuntu-24.04
-#    if: github.repository == 'NCAR/ccpp-scm'
+    if: github.repository == 'NCAR/ccpp-scm'
     strategy:
       fail-fast: false
       matrix:
-        fortran-compiler: [ifx,gfortran]#, nvfortran]
+        fortran-compiler: [ifx, gfortran]#, nvfortran]
         build-type:       [Release, Debug]
         run_lists:        [supported, legacy, dev, sp]#, nvhpc]
         exclude:
@@ -47,14 +47,10 @@ jobs:
     - name: Checkout SCM code (/__w/ccpp-scm/ccpp-scm)
       uses: actions/checkout@v6
 
-    - name: Install System Dependencies
+    - name: Install Required Tools
       run: |
         apt-get update -qq && apt-get install -qq -y --no-install-recommends \
         libxml2-utils
-
-    - name: Install Required Tools
-      run: |
-        apt-get update
 
     - name: Initialize Submodules
       run: |
