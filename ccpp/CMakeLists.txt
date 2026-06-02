@@ -151,8 +151,8 @@ if(DEFINED CCPP_SUITES)
   # Take comma seperated string containing SDF names <CCPP_SUITES>,
   # append <SUITE_FILES_DIR> as file prefix, append ".xml" file suffix,
   # and replace "," with ";"
-  set(SUITE_FILES ${SUITE_FILES_DIR}/${CCPP_SUITES})
-  string(REPLACE "," ".xml;${SUITE_FILES_DIR}/" SUITE_FILES "${SUITE_FILES}")
+  set(SUITE_FILES ${SUITE_FILES_DIR}/suite_${CCPP_SUITES})
+  string(REPLACE "," ".xml;${SUITE_FILES_DIR}/suite_" SUITE_FILES "${SUITE_FILES}")
   set(SUITE_FILES "${SUITE_FILES}.xml")
 else()
   set(SUITE_FILES
