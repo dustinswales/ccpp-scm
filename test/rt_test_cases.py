@@ -93,7 +93,7 @@ run_list_supported_nvhpc = [\
 # Developmental suites, (w/ supported cases).
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 suites_dev_gfortran = [\
-            " SCM_GFS_v16_no_nsst",    "SCM_GFS_v17_p8_ugwpv1_no_nsst",    "SCM_RRFS_v1beta_no_nsst",    "SCM_GFS_v17_p8_ugwpv1_tempo",                   \
+             "SCM_GFS_v16_no_nsst",    "SCM_GFS_v17_p8_ugwpv1_no_nsst",    "SCM_RRFS_v1beta_no_nsst",    "SCM_GFS_v17_p8_ugwpv1_tempo",                   \
              "SCM_GFS_v16_no_nsst_ps", "SCM_GFS_v17_p8_ugwpv1_no_nsst_ps", "SCM_RRFS_v1beta_no_nsst_ps", "SCM_GFS_v17_p8_ugwpv1_tempo_ps",                \
              "SCM_GFS_v16_gfdlmpv3",   "SCM_GFS_v15p2_ntiedtke",       	      	      	      	      	                                                  \
              "SCM_GFS_v16_gfdlmpv3_ps","SCM_GFS_v15p2_ntiedtke_ps"]
