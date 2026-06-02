@@ -76,10 +76,10 @@ set(32BIT           OFF CACHE BOOL "Enable 32BIT (single precision arithmetic in
 
 ##------------------------------------------------------------------------------
 ## Set compile options
-#if (32BIT)
-#  add_definitions(-DSINGLE_PREC)
+if (32BIT)
+  add_definitions(-DSINGLE_PREC)
 #  add_definitions(-DRTE_USE_SP)
-#endif()
+endif()
 
 #------------------------------------------------------------------------------
 # GNU
@@ -231,23 +231,23 @@ endif()
 ##------------------------------------------------------------------------------
 ## Set flag for 32bit dynamics build
 #
-#if(32BIT)
-#  message(STATUS "Compile CCPP slow physics with 64-bit precision, fast physics with 32-bit precision")
-#  add_definitions(-DOVERLOAD_R4)
-#  if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-#    # set(CMAKE_Fortran_FLAGS_PHYSICS  "-real-size 64 -no-prec-div")
-#  elseif(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-#    # set(CMAKE_Fortran_FLAGS_PHYSICS  "-fdefault-real-8 -fdefault-double-8")
-#  endif()
-#  set(CMAKE_Fortran_FLAGS_DYNAMICS "")
-#
-#else()
-#  message(STATUS "Compile CCPP physics with 64-bit precision")
-#  remove_definitions(-DOVERLOAD_R8)
-#  remove_definitions(-DOVERLOAD_R4)
-#  set(CMAKE_Fortran_FLAGS_PHYSICS  "")
-#  set(CMAKE_Fortran_FLAGS_DYNAMICS "")
-#endif()
+if(32BIT)
+  message(STATUS "Compile CCPP slow physics with 64-bit precision, fast physics with 32-bit precision")
+  add_definitions(-DOVERLOAD_R4)
+  if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+    # set(CMAKE_Fortran_FLAGS_PHYSICS  "-real-size 64 -no-prec-div")
+  elseif(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
+    # set(CMAKE_Fortran_FLAGS_PHYSICS  "-fdefault-real-8 -fdefault-double-8")
+  endif()
+  set(CMAKE_Fortran_FLAGS_DYNAMICS "")
+
+else()
+  message(STATUS "Compile CCPP physics with 64-bit precision")
+  remove_definitions(-DOVERLOAD_R8)
+  remove_definitions(-DOVERLOAD_R4)
+  set(CMAKE_Fortran_FLAGS_PHYSICS  "")
+  set(CMAKE_Fortran_FLAGS_DYNAMICS "")
+endif()
 #
 ##------------------------------------------------------------------------------
 ## Set flags for rte-rrtmgp radiation
