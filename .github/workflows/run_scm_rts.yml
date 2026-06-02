@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        fortran-compiler: [gfortran]#, nvfortran]
+        fortran-compiler: [ifx, gfortran]#, nvfortran]
         build-type:       [Release, Debug]
         run_lists:        [supported, legacy, dev, sp]#, nvhpc]
         exclude:
