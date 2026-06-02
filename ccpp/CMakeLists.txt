@@ -232,13 +232,18 @@ ccpp_validator(VERBOSITY ${CCPP_VERBOSITY}
                SOURCE_FILES ${HOST_FORTRAN_FILES}
                METADATA_FILES ${HOST_METADATA_FILES})
 
+if (32BIT)
+  set(CCPP_KINDS "kind_phys=REAL32")
+  message(STATUS "Building physics with 32-bit")
+endif()
 # Run ccpp_capgen_ng
 ccpp_capgen(VERBOSITY ${CCPP_VERBOSITY}
             HOSTFILES ${HOST_METADATA_FILES}
             SCHEMEFILES ${SCHEME_METADATA_FILES}
             SUITES ${SUITE_FILES}
             HOST_NAME ${HOST}
-            OUTPUT_ROOT "${OUTPUT_ROOT}")
+            OUTPUT_ROOT "${OUTPUT_ROOT}"
+	    KIND_SPECS "${CCPP_KINDS}")
 
 # Retrieve the list of Fortran files required for test host from datatable.xml;
 # this includes capgen-generated files and dependencies inferred from metadata
